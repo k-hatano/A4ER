@@ -7,7 +7,7 @@ public class A4ER extends JFrame implements ActionListener {
 	JMenuBar mbMenuBar;
 	JMenu mFile;
 	JMenuItem miOpen,miQuit;
-	A4ERCanvas cCanvas;
+	A4ERCanvas a4erCanvas;
 	
 	A4ER() {
 		super();
@@ -31,8 +31,8 @@ public class A4ER extends JFrame implements ActionListener {
 		mbMenuBar.add(mFile);
 		setJMenuBar(mbMenuBar);
 
-		cCanvas = new A4ERCanvas();
-		add("Center", cCanvas);
+		a4erCanvas = new A4ERCanvas(this);
+		add("Center", a4erCanvas);
 
 		addWindowListener(new WindowAdapter(){
 			public void windowClosing(WindowEvent e){
@@ -55,9 +55,7 @@ public class A4ER extends JFrame implements ActionListener {
 		if (arg0.getSource() == miQuit) {
 			closeWindow();
 		} else if (arg0.getSource() == miOpen) {
-			JFileChooser chooser = new JFileChooser();
-			chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-			int res = chooser.showOpenDialog(this);
+			a4erCanvas.showImportFileDialog();
 		}
 	}
 }
