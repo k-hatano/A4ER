@@ -9,7 +9,7 @@ import javax.swing.filechooser.*;
 public class A4ERCanvas extends Canvas {
 
 	A4ER parent;
-	ArrayList<String> lList = new ArrayList<String>();
+	ArrayList<HashMap<String, String>> lERList = new ArrayList<HashMap<String, String>>();
 
 	public A4ERCanvas(A4ER a4er) {
 		parent = a4er;
@@ -27,8 +27,8 @@ public class A4ERCanvas extends Canvas {
 
 		grp.setColor(Color.black);
 		int y = 0;
-		for (String str : lList) {
-			grp.drawString(str, 0, y);
+		for (HashMap<String, String> item : lERList) {
+			grp.drawString(item.get("name"), 0, y);
 			y += 16;
 		}
 
@@ -50,13 +50,21 @@ public class A4ERCanvas extends Canvas {
 		File file = new File(path);
 		parent.setTitle(file.getName());
 		try {
-			lList = new ArrayList<String>();
+			ArrayList<String> list = new ArrayList<String>();
 			BufferedReader reader = new BufferedReader(new FileReader(file));
-			String str = reader.readLine();
-			while (str != null) {
-				lList.add(str);
-				str = reader.readLine();
+			String line = reader.readLine();
+			while (line != null) {
+				list.add(line);
+				line = reader.readLine();
 			}
+
+			Collections.reverse(list);
+			for (String str : list) {
+				HashMap<String, String> item = new HashMap<String, String>();
+				item.put("name", str);
+				lERList.add(item);
+			}
+
 			repaint();
 		} catch (IOException e) {
 			e.printStackTrace();
