@@ -11,7 +11,8 @@ public class A4ERCanvas extends Canvas {
 
 	A4ER parent;
 	ArrayList<HashMap<String, String>> lEREntities = new ArrayList<HashMap<String, String>>();
-	HashMap<String, HashMap<String, String>> lERFields = new HashMap<String, HashMap<String, String>>();
+	HashMap<String, ArrayList<HashMap<String, String>>> lERFields = new HashMap<String, ArrayList<HashMap<String, String>>>();
+	ArrayList<String> lPages = new ArrayList<String>();
 
 	public A4ERCanvas(A4ER a4er) {
 		parent = a4er;
@@ -28,13 +29,41 @@ public class A4ERCanvas extends Canvas {
 		grp.fillRect(0, 0, w, h);
 
 		grp.setColor(Color.black);
-		int y = 0;
 		for (HashMap<String, String> item : lEREntities) {
 			grp.drawString(item.get("name"), 
 				Integer.parseInt(item.get("x")),
 				Integer.parseInt(item.get("y")));
 
-			y += 16;
+			int left = Integer.parseInt(item.get("x"));
+			int right = Integer.parseInt(item.get("y"));
+			int width = item.get("name").length() * 16;
+			int height = lERFields.get(item.get("name")).size() * 16;
+
+			grp.setColor(Color.white);
+			grp.fillRect(left, right, width, height);
+			grp.setColor(Color.black);
+			grp.drawRect(left, right, width, height);
+		}
+
+		for (String key : lERFields.keySet()) {
+			HashMap<String, String> entity = null;
+			for (HashMap<String, String> anEntity : lEREntities) {
+				if (anEntity.get("name").equals(key)) {
+					entity = anEntity;
+					break;
+				}
+			}
+			if (entity == null) {
+				continue;
+			}
+
+			ArrayList<HashMap<String, String>> fields = lERFields.get(key);
+			int x = Integer.parseInt(entity.get("x"));
+			int y = Integer.parseInt(entity.get("y"));
+			for (HashMap<String, String> item : fields) {
+				y+=16;
+				grp.drawString(item.get("name"),x,y);
+			}
 		}
 
 		g.drawImage(img, 0, 0, this);
@@ -56,7 +85,8 @@ public class A4ERCanvas extends Canvas {
 		parent.setTitle(file.getName());
 		try {
 			lEREntities = new ArrayList<HashMap<String, String>>();
-			lERFields = new HashMap<String, HashMap<String, String>>();
+			lERFields = new HashMap<String, ArrayList<HashMap<String, String>>>();
+			lPages = new ArrayList<String>();
 
 			ArrayList<String> list = new ArrayList<String>();
 			BufferedReader reader = new BufferedReader(new FileReader(file));
@@ -68,7 +98,7 @@ public class A4ERCanvas extends Canvas {
 
 
 			HashMap<String, String> entity = new HashMap<String, String>();
-			HashMap<String, HashMap<String, String>> fields = new HashMap<String, HashMap<String, String>>();
+			ArrayList<HashMap<String, String>> fields = new ArrayList<HashMap<String, String>>();
 			HashMap<String, String> field = new HashMap<String, String>();
 			entity.put("name", "");
 
@@ -79,6 +109,11 @@ public class A4ERCanvas extends Canvas {
 				if (m1.find()) {
 					entity.put("x", m1.group(2));
 					entity.put("y", m1.group(3));
+					String page = m1.group(1);
+					if (lPages.indexOf(page) < 0) {
+						lPages.add(page);
+					}
+
 					continue;
 				}
 
@@ -88,7 +123,8 @@ public class A4ERCanvas extends Canvas {
 					field.put("name", m2.group(1));
 					field.put("key", m2.group(2));
 					field.put("type", m2.group(3));
-					fields.put(entity.get("name"), field);
+					fields.add(field);
+					field = new HashMap<String, String>();
 					continue;
 				}
 
@@ -110,15 +146,19 @@ public class A4ERCanvas extends Canvas {
 				Matcher m5 = p5.matcher(str);
 				if (m5.find()) {
 					lEREntities.add(entity);
-					lERFields.putAll(fields);
+					lERFields.put(entity.get("name") ,fields);
 					entity = new HashMap<String, String>();
-					fields = new HashMap<String, HashMap<String, String>>();
+					fields = new ArrayList<HashMap<String, String>>();
 					field = new HashMap<String, String>();
 					entity.put("name", "");
 					continue;
 				}
 			}
 
+			parent.cbPage.removeAllItems();
+			for (String page : lPages) {
+				parent.cbPage.addItem(page);
+			}
 			repaint();
 		} catch (IOException e) {
 			e.printStackTrace();

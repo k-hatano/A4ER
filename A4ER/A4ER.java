@@ -7,6 +7,7 @@ public class A4ER extends JFrame implements ActionListener {
 	JMenuBar mbMenuBar;
 	JMenu mFile;
 	JMenuItem miOpen,miQuit;
+	JComboBox cbPage;
 	A4ERCanvas a4erCanvas;
 	
 	A4ER() {
@@ -30,6 +31,9 @@ public class A4ER extends JFrame implements ActionListener {
 		mFile.add(miQuit);
 		mbMenuBar.add(mFile);
 		setJMenuBar(mbMenuBar);
+
+		cbPage = new JComboBox();
+		add("North", cbPage);
 
 		a4erCanvas = new A4ERCanvas(this);
 		add("Center", a4erCanvas);
