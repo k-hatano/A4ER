@@ -33,6 +33,12 @@ public class A4ER extends JFrame implements ActionListener {
 		setJMenuBar(mbMenuBar);
 
 		cbPage = new JComboBox();
+		cbPage.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {    
+				a4erCanvas.repaint();
+			}
+		});
 		add("North", cbPage);
 
 		a4erCanvas = new A4ERCanvas(this);

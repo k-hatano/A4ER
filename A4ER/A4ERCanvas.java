@@ -10,7 +10,7 @@ import javax.swing.filechooser.*;
 public class A4ERCanvas extends Canvas {
 
 	A4ER parent;
-	ArrayList<HashMap<String, String>> lEREntities = new ArrayList<HashMap<String, String>>();
+	ArrayList<Entity> lEREntities = new ArrayList<Entity>();
 	HashMap<String, ArrayList<HashMap<String, String>>> lERFields = new HashMap<String, ArrayList<HashMap<String, String>>>();
 	ArrayList<String> lPages = new ArrayList<String>();
 
@@ -25,19 +25,25 @@ public class A4ERCanvas extends Canvas {
 		Image img = createImage(w,h);
 		Graphics2D grp = (Graphics2D)(img.getGraphics());
 
+		String currentPage = (String) parent.cbPage.getSelectedItem();
+
 		grp.setColor(Color.white);
 		grp.fillRect(0, 0, w, h);
 
 		grp.setColor(Color.black);
-		for (HashMap<String, String> item : lEREntities) {
-			grp.drawString(item.get("name"), 
-				Integer.parseInt(item.get("x")),
-				Integer.parseInt(item.get("y")));
+		for (Entity item : lEREntities) {
+			if (!item.page.equals(currentPage)) {
+				continue;
+			}
 
-			int left = Integer.parseInt(item.get("x"));
-			int right = Integer.parseInt(item.get("y"));
-			int width = item.get("name").length() * 16;
-			int height = lERFields.get(item.get("name")).size() * 16;
+			grp.drawString(item.logicalName, 
+				item.left,
+				item.top);
+
+			int left = item.left;
+			int right = item.top;
+			int width = item.logicalName.length() * 16;
+			int height = lERFields.get(item.physicalName).size() * 16;
 
 			grp.setColor(Color.white);
 			grp.fillRect(left, right, width, height);
@@ -46,9 +52,13 @@ public class A4ERCanvas extends Canvas {
 		}
 
 		for (String key : lERFields.keySet()) {
-			HashMap<String, String> entity = null;
-			for (HashMap<String, String> anEntity : lEREntities) {
-				if (anEntity.get("name").equals(key)) {
+			Entity entity = null;
+			for (Entity anEntity : lEREntities) {
+				if (!anEntity.page.equals(currentPage)) {
+					continue;
+				}
+
+				if (anEntity.physicalName.equals(key)) {
 					entity = anEntity;
 					break;
 				}
@@ -58,8 +68,8 @@ public class A4ERCanvas extends Canvas {
 			}
 
 			ArrayList<HashMap<String, String>> fields = lERFields.get(key);
-			int x = Integer.parseInt(entity.get("x"));
-			int y = Integer.parseInt(entity.get("y"));
+			int x = entity.left;
+			int y = entity.top;
 			for (HashMap<String, String> item : fields) {
 				y+=16;
 				grp.drawString(item.get("name"),x,y);
@@ -84,7 +94,7 @@ public class A4ERCanvas extends Canvas {
 		File file = new File(path);
 		parent.setTitle(file.getName());
 		try {
-			lEREntities = new ArrayList<HashMap<String, String>>();
+			lEREntities = new ArrayList<Entity>();
 			lERFields = new HashMap<String, ArrayList<HashMap<String, String>>>();
 			lPages = new ArrayList<String>();
 
@@ -97,21 +107,22 @@ public class A4ERCanvas extends Canvas {
 			}
 
 
-			HashMap<String, String> entity = new HashMap<String, String>();
+			Entity entity = new Entity();
 			ArrayList<HashMap<String, String>> fields = new ArrayList<HashMap<String, String>>();
 			HashMap<String, String> field = new HashMap<String, String>();
-			entity.put("name", "");
+			entity.logicalName = "";
+			entity.physicalName = "";
 
 			Collections.reverse(list);
 			for (String str : list) {
 				final Pattern p1 = Pattern.compile("^Position=\\\"(.*)\\\",(\\d+),(\\d+)");
 				Matcher m1 = p1.matcher(str);
 				if (m1.find()) {
-					entity.put("x", m1.group(2));
-					entity.put("y", m1.group(3));
-					String page = m1.group(1);
-					if (lPages.indexOf(page) < 0) {
-						lPages.add(page);
+					entity.left = Integer.parseInt(m1.group(2));
+					entity.top = Integer.parseInt(m1.group(3));
+					entity.page = m1.group(1);
+					if (lPages.indexOf(entity.page) < 0) {
+						lPages.add(entity.page);
 					}
 
 					continue;
@@ -131,14 +142,14 @@ public class A4ERCanvas extends Canvas {
 				final Pattern p3 = Pattern.compile("^PName=(.+)");
 				Matcher m3 = p3.matcher(str);
 				if (m3.find()) {
-					entity.put("name", m3.group(1));
+					entity.physicalName = m3.group(1);
 					continue;
 				}
 
 				final Pattern p4 = Pattern.compile("^LName=(.+)");
 				Matcher m4 = p4.matcher(str);
 				if (m4.find()) {
-					entity.put("key", m4.group(1));
+					entity.logicalName = m4.group(1);
 					continue;
 				}
 
@@ -146,11 +157,12 @@ public class A4ERCanvas extends Canvas {
 				Matcher m5 = p5.matcher(str);
 				if (m5.find()) {
 					lEREntities.add(entity);
-					lERFields.put(entity.get("name") ,fields);
-					entity = new HashMap<String, String>();
+					lERFields.put(entity.physicalName ,fields);
+					entity = new Entity();
 					fields = new ArrayList<HashMap<String, String>>();
 					field = new HashMap<String, String>();
-					entity.put("name", "");
+					entity.logicalName = "";
+					entity.physicalName = "";
 					continue;
 				}
 			}
