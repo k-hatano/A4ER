@@ -1,5 +1,8 @@
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.dnd.*;
+import java.awt.datatransfer.*;
+import java.io.*;
 
 import javax.swing.*;
 
@@ -49,6 +52,8 @@ public class A4ER extends JFrame implements ActionListener {
 				closeWindow();
 			}
 		});
+
+		new DropTarget(this,new Dropper(this));
 	}
 
 	public static void main(String[] argv){
@@ -68,5 +73,31 @@ public class A4ER extends JFrame implements ActionListener {
 			a4erCanvas.showImportFileDialog();
 		}
 	}
-}
 
+	class Dropper extends DropTargetAdapter{
+
+		A4ER superview;
+
+		Dropper(A4ER a4er){
+			super();
+			superview = a4er;
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public void drop(DropTargetDropEvent arg0) {
+			try {
+				Transferable t = arg0.getTransferable();
+				if (t.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
+					arg0.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
+
+					File file = ((java.util.List<File>)t.getTransferData(DataFlavor.javaFileListFlavor)).get(0);
+					superview.a4erCanvas.importA5ER(file.getAbsolutePath());
+				}
+			}
+			catch (Exception ex){
+				ex.printStackTrace(System.err);
+			}
+		}
+	}
+}
