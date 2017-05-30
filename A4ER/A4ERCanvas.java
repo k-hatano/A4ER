@@ -7,15 +7,22 @@ import java.util.regex.*;
 import javax.swing.*;
 import javax.swing.filechooser.*;
 
-public class A4ERCanvas extends Canvas {
+public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionListener {
 
 	A4ER parent;
 	ArrayList<Entity> lEREntities = new ArrayList<Entity>();
 	HashMap<String, ArrayList<HashMap<String, String>>> lERFields = new HashMap<String, ArrayList<HashMap<String, String>>>();
 	ArrayList<String> lPages = new ArrayList<String>();
 
+	int originalX, originalY;
+	int scrollX, scrollY;
+	int clickedX, clickedY;
+	boolean dragging = false;
+
 	public A4ERCanvas(A4ER a4er) {
 		parent = a4er;
+		addMouseListener(this);
+		addMouseMotionListener(this);
 	}
 
 	public void paint(final Graphics g){
@@ -37,11 +44,11 @@ public class A4ERCanvas extends Canvas {
 			}
 
 			grp.drawString(item.logicalName, 
-				item.left,
-				item.top);
+				item.left + scrollX,
+				item.top + scrollY);
 
-			int left = item.left;
-			int right = item.top;
+			int left = item.left + scrollX;
+			int right = item.top + scrollY;
 			int width = item.logicalName.length() * 16;
 			int height = lERFields.get(item.physicalName).size() * 16;
 
@@ -68,8 +75,8 @@ public class A4ERCanvas extends Canvas {
 			}
 
 			ArrayList<HashMap<String, String>> fields = lERFields.get(key);
-			int x = entity.left;
-			int y = entity.top;
+			int x = entity.left + scrollX;
+			int y = entity.top + scrollY;
 			for (HashMap<String, String> item : fields) {
 				y+=16;
 				grp.drawString(item.get("name"),x,y);
@@ -175,6 +182,48 @@ public class A4ERCanvas extends Canvas {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent arg0) {
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent arg0) {
+
+	}
+
+	@Override
+	public void mouseExited(MouseEvent arg0) {
+
+	}
+
+	@Override
+	public void mousePressed(MouseEvent arg0) {
+		originalX = scrollX;
+		originalY = scrollY;
+		clickedX = arg0.getX();
+		clickedY = arg0.getY();
+		dragging = true;
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent arg0) {
+		dragging = false;
+	}
+
+	@Override
+	public void mouseDragged(MouseEvent arg0) {
+		if (dragging) {
+			scrollX = originalX + (arg0.getX() - clickedX);
+			scrollY = originalY + (arg0.getY() - clickedY);
+			repaint();
+		}
+	}
+
+	@Override
+	public void mouseMoved(MouseEvent arg0) {
+
 	}
 
 }
