@@ -8,6 +8,9 @@ public class Entity {
 	public int top;
 	public String page;
 
+	public int physicalNameWidth;
+	public int logicalNameWidth;
+
 	public Entity() {
 		super();
 		fields = new ArrayList<Field>();
