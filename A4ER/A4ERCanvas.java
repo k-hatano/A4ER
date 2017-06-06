@@ -11,7 +11,7 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 
 	A4ER parent;
 	ArrayList<Entity> lEREntities = new ArrayList<Entity>();
-	HashMap<String, ArrayList<HashMap<String, String>>> lERFields = new HashMap<String, ArrayList<HashMap<String, String>>>();
+	HashMap<String, ArrayList<Field>> lERFields = new HashMap<String, ArrayList<Field>>();
 	ArrayList<String> lPages = new ArrayList<String>();
 
 	int originalX, originalY;
@@ -58,7 +58,7 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 				if (item.physicalNameWidth < physicalNameWidth) {
 					item.physicalNameWidth = physicalNameWidth;
 				}
-				for (Field field : item.fields) {
+				for (Field field : lERFields.get(item.physicalName)) {
 					physicalNameWidth = metrics.getStringBounds(field.key, grp).getBounds().width;
 					if (item.physicalNameWidth < physicalNameWidth) {
 						item.physicalNameWidth = physicalNameWidth;
@@ -71,7 +71,7 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 				if (item.logicalNameWidth < logicalNameWidth) {
 					item.logicalNameWidth = logicalNameWidth;
 				}
-				for (Field field : item.fields) {
+				for (Field field : lERFields.get(item.physicalName)) {
 					logicalNameWidth = metrics.getStringBounds(field.name, grp).getBounds().width;
 					if (item.logicalNameWidth < logicalNameWidth) {
 						item.logicalNameWidth = logicalNameWidth;
@@ -114,12 +114,12 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 				continue;
 			}
 
-			ArrayList<HashMap<String, String>> fields = lERFields.get(key);
+			ArrayList<Field> fields = lERFields.get(key);
 			int x = entity.left + scrollX;
 			int y = entity.top + scrollY;
-			for (HashMap<String, String> item : fields) {
+			for (Field item : fields) {
 				y+=16;
-				grp.drawString(item.get("name"),x,y);
+				grp.drawString(item.name,x,y);
 			}
 		}
 
@@ -151,7 +151,7 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 		parent.setTitle(file.getName());
 		try {
 			lEREntities = new ArrayList<Entity>();
-			lERFields = new HashMap<String, ArrayList<HashMap<String, String>>>();
+			lERFields = new HashMap<String, ArrayList<Field>>();
 			lPages = new ArrayList<String>();
 
 			ArrayList<String> list = new ArrayList<String>();
@@ -164,8 +164,8 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 
 
 			Entity entity = new Entity();
-			ArrayList<HashMap<String, String>> fields = new ArrayList<HashMap<String, String>>();
-			HashMap<String, String> field = new HashMap<String, String>();
+			ArrayList<Field> fields = new ArrayList<Field>();
+			Field field = new Field();
 			entity.logicalName = "";
 			entity.physicalName = "";
 
@@ -187,11 +187,11 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 				final Pattern p2 = Pattern.compile("^Field=\\\"(.*?)\\\",\\\"(.*?)\\\",\\\"(.*?)\\\"");
 				Matcher m2 = p2.matcher(str);
 				if (m2.find()) {
-					field.put("name", m2.group(1));
-					field.put("key", m2.group(2));
-					field.put("type", m2.group(3));
+					field.name = m2.group(1);
+					field.key = m2.group(2);
+					field.type = m2.group(3);
 					fields.add(0, field);
-					field = new HashMap<String, String>();
+					field = new Field();
 					continue;
 				}
 
@@ -215,8 +215,8 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 					lEREntities.add(0, entity);
 					lERFields.put(entity.physicalName ,fields);
 					entity = new Entity();
-					fields = new ArrayList<HashMap<String, String>>();
-					field = new HashMap<String, String>();
+					fields = new ArrayList<Field>();
+					field = new Field();
 					entity.logicalName = "";
 					entity.physicalName = "";
 					continue;
