@@ -7,10 +7,11 @@ import java.io.*;
 import javax.swing.*;
 
 public class A4ER extends JFrame implements ActionListener {
+	JPanel pHeaderPanel;
 	JMenuBar mbMenuBar;
 	JMenu mFile;
 	JMenuItem miOpen,miQuit;
-	JComboBox cbPage;
+	JComboBox cbPage, cbMode;
 	A4ERCanvas a4erCanvas;
 	
 	A4ER() {
@@ -35,17 +36,22 @@ public class A4ER extends JFrame implements ActionListener {
 		mbMenuBar.add(mFile);
 		setJMenuBar(mbMenuBar);
 
-		cbPage = new JComboBox();
-		cbPage.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {    
-				a4erCanvas.repaint();
-			}
-		});
-		add("North", cbPage);
-
 		a4erCanvas = new A4ERCanvas(this);
 		add("Center", a4erCanvas);
+
+		pHeaderPanel = new JPanel();
+		pHeaderPanel.setLayout(new BorderLayout());
+
+		cbPage = new JComboBox();
+		cbPage.addActionListener(e -> a4erCanvas.repaint());
+		pHeaderPanel.add("Center", cbPage);
+
+		cbMode = new JComboBox();
+		cbPage.addActionListener(e -> a4erCanvas.repaint());
+		pHeaderPanel.add("East", cbMode);
+		cbMode.addItem("Attributes");
+
+		add("North", pHeaderPanel);
 
 		addWindowListener(new WindowAdapter(){
 			public void windowClosing(WindowEvent e){

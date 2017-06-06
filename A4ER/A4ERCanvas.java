@@ -140,7 +140,7 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 		}
 		int res = chooser.showOpenDialog(this);
 		if (res == JFileChooser.APPROVE_OPTION) {
-			File file=chooser.getSelectedFile();
+			File file = chooser.getSelectedFile();
 			lastFile = file;
 			importA5ER(file.getAbsolutePath());
 		}
