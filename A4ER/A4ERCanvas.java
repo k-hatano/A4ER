@@ -179,7 +179,7 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 			lPages = new ArrayList<String>();
 
 			ArrayList<String> list = new ArrayList<String>();
-			BufferedReader reader = new BufferedReader(new FileReader(file));
+			BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file),"UTF-8"));
 			String line = reader.readLine();
 			while (line != null) {
 				list.add(line);
