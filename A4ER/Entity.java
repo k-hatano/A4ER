@@ -9,6 +9,7 @@ public class Entity {
 
 	public int physicalNameWidth;
 	public int logicalNameWidth;
+	public int typeWidth;
 
 	public Entity() {
 		super();

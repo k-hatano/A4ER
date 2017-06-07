@@ -33,6 +33,7 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 
 		int maxWidth = 0;
 		int maxHeight = 0;
+		int level = parent.cbLevel.getSelectedIndex();
 
 		Image img = createImage(w,h);
 		Graphics2D grp = (Graphics2D)(img.getGraphics());
@@ -79,10 +80,25 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 				}
 			}
 
+			if (item.typeWidth == 0) {
+				int typeWidth = 0;
+				for (Field field : lERFields.get(item.physicalName)) {
+					typeWidth = metrics.getStringBounds(field.type, grp).getBounds().width;
+					if (item.typeWidth < typeWidth) {
+						item.typeWidth = typeWidth;
+					}
+				}
+			}
+
 			int left = item.left + scrollX;
 			int top = item.top + scrollY;
 			int width = item.logicalNameWidth;
 			int height = lERFields.get(item.physicalName).size() * 16;
+			if (level == 1) {
+				width = item.logicalNameWidth + item.physicalNameWidth;
+			} else if (level == 2) {
+				width = item.logicalNameWidth + item.typeWidth;
+			}
 
 			grp.setColor(Color.white);
 			grp.fillRect(left, top, width, height);
@@ -118,8 +134,13 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 			int x = entity.left + scrollX;
 			int y = entity.top + scrollY;
 			for (Field item : fields) {
-				y+=16;
-				grp.drawString(item.name,x,y);
+				y += 16;
+				grp.drawString(item.name, x, y);
+				if (level == 1) {
+					grp.drawString(item.key, x + entity.logicalNameWidth, y);
+				} else if (level == 2) {
+					grp.drawString(item.type, x + entity.logicalNameWidth, y);
+				}
 			}
 		}
 

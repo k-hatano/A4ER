@@ -11,7 +11,7 @@ public class A4ER extends JFrame implements ActionListener {
 	JMenuBar mbMenuBar;
 	JMenu mFile;
 	JMenuItem miOpen,miQuit;
-	JComboBox cbPage, cbMode;
+	JComboBox cbPage, cbLevel;
 	A4ERCanvas a4erCanvas;
 	
 	A4ER() {
@@ -46,10 +46,12 @@ public class A4ER extends JFrame implements ActionListener {
 		cbPage.addActionListener(e -> a4erCanvas.repaint());
 		pHeaderPanel.add("Center", cbPage);
 
-		cbMode = new JComboBox();
-		cbPage.addActionListener(e -> a4erCanvas.repaint());
-		pHeaderPanel.add("East", cbMode);
-		cbMode.addItem("Attributes");
+		cbLevel = new JComboBox();
+		cbLevel.addActionListener(e -> a4erCanvas.repaint());
+		pHeaderPanel.add("East", cbLevel);
+		cbLevel.addItem("Attributes");
+		cbLevel.addItem("Attributes & Physical Names");
+		cbLevel.addItem("Attributes & Types");
 
 		add("North", pHeaderPanel);
 
