@@ -46,13 +46,14 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 
 		grp.setColor(Color.black);
 		for (Entity item : lEREntities) {
-			if (!item.page.equals(currentPage)) {
+			Position position = item.positionInPage(currentPage);
+			if (position == null) {
 				continue;
 			}
 
 			grp.drawString(item.logicalName, 
-				item.left + scrollX,
-				item.top + scrollY);
+				position.x + scrollX,
+				position.y + scrollY);
 
 			if (item.physicalNameWidth == 0) {
 				int physicalNameWidth = metrics.getStringBounds(item.physicalName, grp).getBounds().width;
@@ -90,8 +91,8 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 				}
 			}
 
-			int left = item.left + scrollX;
-			int top = item.top + scrollY;
+			int left = position.x + scrollX;
+			int top = position.y + scrollY;
 			int width = item.logicalNameWidth;
 			int height = lERFields.get(item.physicalName).size() * 16;
 			if (level == 1) {
@@ -116,8 +117,10 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 
 		for (String key : lERFields.keySet()) {
 			Entity entity = null;
+			Position position = null;
 			for (Entity anEntity : lEREntities) {
-				if (!anEntity.page.equals(currentPage)) {
+				position = anEntity.positionInPage(currentPage);
+				if (position == null) {
 					continue;
 				}
 
@@ -126,13 +129,13 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 					break;
 				}
 			}
-			if (entity == null) {
+			if (entity == null || position == null) {
 				continue;
 			}
 
 			ArrayList<Field> fields = lERFields.get(key);
-			int x = entity.left + scrollX;
-			int y = entity.top + scrollY;
+			int x = position.x + scrollX;
+			int y = position.y + scrollY;
 			for (Field item : fields) {
 				y += 16;
 				grp.drawString(item.name, x, y);
@@ -195,11 +198,15 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 				final Pattern p1 = Pattern.compile("^Position=\\\"(.*)\\\",(\\d+),(\\d+)");
 				Matcher m1 = p1.matcher(str);
 				if (m1.find()) {
-					entity.left = Integer.parseInt(m1.group(2));
-					entity.top = Integer.parseInt(m1.group(3));
-					entity.page = m1.group(1);
-					if (lPages.indexOf(entity.page) < 0) {
-						lPages.add(0, entity.page);
+					String page = m1.group(1);
+
+					Position position = new Position();
+					position.x = Integer.parseInt(m1.group(2));
+					position.y = Integer.parseInt(m1.group(3));
+					position.page = page;
+					entity.positions.add(position);
+					if (lPages.indexOf(page) < 0) {
+						lPages.add(0, page);
 					}
 
 					continue;
