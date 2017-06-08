@@ -57,10 +57,7 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 				position.y + scrollY);
 
 			if (item.physicalNameWidth == 0) {
-				int physicalNameWidth = metrics.getStringBounds(item.physicalName, grp).getBounds().width;
-				if (item.physicalNameWidth < physicalNameWidth) {
-					item.physicalNameWidth = physicalNameWidth;
-				}
+				int physicalNameWidth = 0;
 				for (Field field : lERFields.get(item.physicalName)) {
 					physicalNameWidth = metrics.getStringBounds(field.key, grp).getBounds().width;
 					if (item.physicalNameWidth < physicalNameWidth) {
@@ -70,10 +67,7 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 			}
 
 			if (item.logicalNameWidth == 0) {
-				int logicalNameWidth = metrics.getStringBounds(item.logicalName, grp).getBounds().width;
-				if (item.logicalNameWidth < logicalNameWidth) {
-					item.logicalNameWidth = logicalNameWidth;
-				}
+				int logicalNameWidth = 0;
 				for (Field field : lERFields.get(item.physicalName)) {
 					logicalNameWidth = metrics.getStringBounds(field.name, grp).getBounds().width;
 					if (item.logicalNameWidth < logicalNameWidth) {
@@ -297,11 +291,11 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 						case 3:
 						case 4:
 						case 6:
-							level = 1;
+							level = 2;
 							break;
 						case 5:
 						case 7:
-							level = 2;
+							level = 1;
 							break;
 						default:
 							level = 0;
@@ -355,8 +349,13 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 	@Override
 	public void mouseDragged(MouseEvent arg0) {
 		if (dragging) {
-			scrollX = originalX + (arg0.getX() - clickedX);
-			scrollY = originalY + (arg0.getY() - clickedY);
+			if (arg0.getButton() == MouseEvent.BUTTON2) {
+				scrollX = originalX + (arg0.getX() - clickedX) * 2;
+				scrollY = originalY + (arg0.getY() - clickedY) * 2;
+			} else {
+				scrollX = originalX + (arg0.getX() - clickedX);
+				scrollY = originalY + (arg0.getY() - clickedY);
+			}
 			repaint();
 		}
 	}
