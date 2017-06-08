@@ -12,6 +12,7 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 	A4ER parent;
 	ArrayList<Entity> lEREntities = new ArrayList<Entity>();
 	HashMap<String, ArrayList<Field>> lERFields = new HashMap<String, ArrayList<Field>>();
+	ArrayList<Relation> lERReleations = new ArrayList<Relation>();
 	ArrayList<String> lPages = new ArrayList<String>();
 
 	int originalX, originalY;
@@ -116,20 +117,12 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 		}
 
 		for (String key : lERFields.keySet()) {
-			Entity entity = null;
-			Position position = null;
-			for (Entity anEntity : lEREntities) {
-				position = anEntity.positionInPage(currentPage);
-				if (position == null) {
-					continue;
-				}
-
-				if (anEntity.physicalName.equals(key)) {
-					entity = anEntity;
-					break;
-				}
+			Entity entity = Entity.entityNamed(lEREntities, key);
+			if (entity == null) {
+				continue;
 			}
-			if (entity == null || position == null) {
+			Position position = entity.positionInPage(currentPage);
+			if (position == null) {
 				continue;
 			}
 
@@ -145,6 +138,23 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 					grp.drawString(item.type, x + entity.logicalNameWidth, y);
 				}
 			}
+		}
+
+		for (Relation relation : lERReleations) {
+			Entity entity1 = Entity.entityNamed(lEREntities, relation.entity1);
+			Entity entity2 = Entity.entityNamed(lEREntities, relation.entity2);
+			if (entity1 == null || entity2 == null) {
+				continue;
+			}
+			Position position1 = entity1.positionInPage(currentPage);
+			Position position2 = entity2.positionInPage(currentPage);
+
+			if (position1 == null || position2 == null) {
+				continue;
+			}
+
+			grp.drawLine(position1.x + scrollX, position1.y + scrollY,
+			 position2.x + scrollX, position2.y + scrollY);
 		}
 
 		if (dragging) {
@@ -176,6 +186,7 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 		try {
 			lEREntities = new ArrayList<Entity>();
 			lERFields = new HashMap<String, ArrayList<Field>>();
+			lERReleations = new ArrayList<Relation>();
 			lPages = new ArrayList<String>();
 
 			ArrayList<String> list = new ArrayList<String>();
@@ -190,8 +201,7 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 			Entity entity = new Entity();
 			ArrayList<Field> fields = new ArrayList<Field>();
 			Field field = new Field();
-			entity.logicalName = "";
-			entity.physicalName = "";
+			Relation relation = new Relation();
 
 			Collections.reverse(list);
 			for (String str : list) {
@@ -245,8 +255,31 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 					entity = new Entity();
 					fields = new ArrayList<Field>();
 					field = new Field();
-					entity.logicalName = "";
-					entity.physicalName = "";
+					relation = new Relation();
+					continue;
+				}
+
+				final Pattern p6 = Pattern.compile("^Entity1=(.+)");
+				Matcher m6 = p6.matcher(str);
+				if (m6.find()) {
+					relation.entity1 = m6.group(1);
+					continue;
+				}
+
+				final Pattern p7 = Pattern.compile("^Entity2=(.+)");
+				Matcher m7 = p7.matcher(str);
+				if (m7.find()) {
+					relation.entity2 = m7.group(1);
+					continue;
+				}
+
+				final Pattern p8 = Pattern.compile("^\\[Relation\\]");
+				Matcher m8 = p8.matcher(str);
+				if (m8.find()) {
+					lERReleations.add(0, relation);
+					entity = new Entity();
+					fields = new ArrayList<Field>();
+					field = new Field();
 					continue;
 				}
 			}

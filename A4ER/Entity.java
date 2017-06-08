@@ -12,6 +12,17 @@ public class Entity {
 	public Entity() {
 		super();
 		positions = new ArrayList<Position>();
+		physicalName = "";
+		logicalName = "";
+	}
+
+	public static Entity entityNamed(ArrayList<Entity> entities,String entityName) {
+		for (Entity entity : entities) {
+			if (entity.physicalName.equals(entityName)) {
+				return entity;
+			}
+		}
+		return null;
 	}
 
 	public Position positionInPage(String page){
