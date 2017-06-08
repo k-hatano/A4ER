@@ -202,6 +202,7 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 			ArrayList<Field> fields = new ArrayList<Field>();
 			Field field = new Field();
 			Relation relation = new Relation();
+			int level = 0;
 
 			Collections.reverse(list);
 			for (String str : list) {
@@ -282,12 +283,39 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 					field = new Field();
 					continue;
 				}
+
+				final Pattern p9 = Pattern.compile("^ViewMode=(\\d+)");
+				Matcher m9 = p9.matcher(str);
+				if (m9.find()) {
+					int tmpLevel = Integer.parseInt(m9.group(1));
+					switch (tmpLevel) {
+						case 0:
+						case 1:
+						case 2:
+							level = 0;
+							break;
+						case 3:
+						case 4:
+						case 6:
+							level = 1;
+							break;
+						case 5:
+						case 7:
+							level = 2;
+							break;
+						default:
+							level = 0;
+							break;
+					}
+					continue;
+				}
 			}
 
 			parent.cbPage.removeAllItems();
 			for (String page : lPages) {
 				parent.cbPage.addItem(page);
 			}
+			parent.cbLevel.setSelectedIndex(level);
 			repaint();
 		} catch (IOException e) {
 			e.printStackTrace();
