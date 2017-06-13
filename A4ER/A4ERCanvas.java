@@ -162,7 +162,7 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 	public void showImportFileDialog() {
 		JFileChooser chooser = new JFileChooser();
 		chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-		chooser.setFileFilter(new FileNameExtensionFilter("ERダイアグラム", "a5er"));
+		chooser.setFileFilter(new FileNameExtensionFilter("ER Diagram", "a5er"));
 		if (lastFile != null) {
 			chooser.setSelectedFile(lastFile);
 		}
@@ -363,6 +363,45 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 	@Override
 	public void mouseMoved(MouseEvent arg0) {
 
+	}
+
+	public int showEntitiesList() {
+		ArrayList<String> entitiesList = new ArrayList<String>();
+
+		for (Entity item : lEREntities) {
+			entitiesList.add(item.logicalName);
+		}
+
+		Collections.sort(entitiesList);
+		String[] entities = (String[])(entitiesList.toArray(new String[0]));
+
+		if (entities.length <= 0) {
+			JOptionPane.showMessageDialog(parent,"No entities loaded.", 
+				"Entities List", JOptionPane.INFORMATION_MESSAGE);
+		}
+
+		String result = (String)JOptionPane.showInputDialog(parent,
+			null,
+			"Entities List",
+			JOptionPane.INFORMATION_MESSAGE,
+			null,
+			entities,
+			entities[0]);
+		
+		if (result != null && result.length() > 0) {
+			for (Entity item : lEREntities) {
+				if (item.logicalName.equals(result)) {
+					Position position = item.positions.get(0);
+					parent.cbPage.setSelectedItem(position.page);
+					scrollX = -position.x + 64;
+					scrollY = -position.y + 64;
+					repaint();
+					break;
+				}
+			}
+		}
+
+		return 0;
 	}
 
 }

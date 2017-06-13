@@ -9,9 +9,10 @@ import javax.swing.*;
 public class A4ER extends JFrame implements ActionListener {
 	JPanel pHeaderPanel;
 	JMenuBar mbMenuBar;
-	JMenu mFile;
+	JMenu mFile,mEdit;
 	JMenuItem miOpen,miQuit;
 	JComboBox cbPage, cbLevel;
+	JMenuItem miEntitiesList;
 	A4ERCanvas a4erCanvas;
 	
 	A4ER() {
@@ -34,6 +35,14 @@ public class A4ER extends JFrame implements ActionListener {
 		miQuit.setAccelerator(KeyStroke.getKeyStroke('Q',KeyEvent.CTRL_MASK));
 		mFile.add(miQuit);
 		mbMenuBar.add(mFile);
+
+
+		mEdit = new JMenu("Edit");
+		miEntitiesList = new JMenuItem("Entities List...");
+		miEntitiesList.addActionListener(this);
+		mEdit.add(miEntitiesList);
+		mbMenuBar.add(mEdit);
+
 		setJMenuBar(mbMenuBar);
 
 		a4erCanvas = new A4ERCanvas(this);
@@ -79,6 +88,8 @@ public class A4ER extends JFrame implements ActionListener {
 			closeWindow();
 		} else if (arg0.getSource() == miOpen) {
 			a4erCanvas.showImportFileDialog();
+		} else if (arg0.getSource() == miEntitiesList) {
+			a4erCanvas.showEntitiesList();
 		}
 	}
 
