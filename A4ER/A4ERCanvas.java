@@ -95,6 +95,8 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 			} else if (level == 2) {
 				width = item.logicalNameWidth + item.typeWidth;
 			}
+			item.tmpWidth = width;
+			item.tmpHeight = height;
 
 			grp.setColor(Color.white);
 			grp.fillRect(left, top, width, height);
@@ -147,8 +149,50 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 				continue;
 			}
 
-			grp.drawLine(position1.x + scrollX, position1.y + scrollY,
-			 position2.x + scrollX, position2.y + scrollY);
+			Point left1 = new Point(position1.x , (position1.y + position1.y + entity1.tmpHeight) / 2);
+			Point top1 = new Point((position1.x + position1.x + entity1.tmpWidth)/2 , position1.y);
+			Point right1 = new Point(position1.x + entity1.tmpWidth , (position1.y + position1.y + entity1.tmpHeight)/2);
+			Point bottom1 = new Point((position1.x + position1.x + entity1.tmpWidth)/2 , position1.y + entity1.tmpHeight);
+
+			Point left2 = new Point(position2.x , (position2.y + position2.y + entity2.tmpHeight) / 2);
+			Point top2 = new Point((position2.x + position2.x + entity2.tmpWidth)/2 , position2.y);
+			Point right2 = new Point(position2.x + entity2.tmpWidth , (position2.y + position2.y + entity2.tmpHeight)/2);
+			Point bottom2 = new Point((position2.x + position2.x + entity2.tmpWidth)/2 , position2.y + entity2.tmpHeight);
+
+			int minDist = (int)Math.min(left1.manhattanDistanceTo(right2),
+				Math.min(top1.manhattanDistanceTo(bottom2),
+					Math.min(right1.manhattanDistanceTo(left2),
+						bottom1.manhattanDistanceTo(top2))));
+
+			if (minDist == left1.manhattanDistanceTo(right2)) {
+				grp.drawLine(left1.x + scrollX, left1.y + scrollY, 
+					right2.x + scrollX, right2.y + scrollY);
+				grp.drawLine(left1.x + scrollX, left1.y + scrollY, 
+					right2.x + scrollX, right2.y + scrollY);
+				grp.drawLine(left1.x + scrollX, left1.y + scrollY, 
+					right2.x + scrollX, right2.y + scrollY);
+			} else if (minDist == top1.manhattanDistanceTo(bottom2))  {
+				grp.drawLine(top1.x + scrollX, top1.y + scrollY, 
+					bottom2.x + scrollX, bottom2.y + scrollY);
+				grp.drawLine(top1.x + scrollX, top1.y + scrollY, 
+					bottom2.x + scrollX, bottom2.y + scrollY);
+				grp.drawLine(top1.x + scrollX, top1.y + scrollY, 
+					bottom2.x + scrollX, bottom2.y + scrollY);
+			} else if (minDist == right1.manhattanDistanceTo(left2))  {
+				grp.drawLine(right1.x + scrollX, right1.y + scrollY, 
+					left2.x + scrollX, left2.y + scrollY);
+				grp.drawLine(right1.x + scrollX, right1.y + scrollY, 
+					left2.x + scrollX, left2.y + scrollY);
+				grp.drawLine(right1.x + scrollX, right1.y + scrollY,
+					left2.x + scrollX, left2.y + scrollY);
+			} else {
+				grp.drawLine(bottom1.x + scrollX, bottom1.y + scrollY, 
+					top2.x + scrollX, top2.y + scrollY);
+				grp.drawLine(bottom1.x + scrollX, bottom1.y + scrollY, 
+					top2.x + scrollX, top2.y + scrollY);
+				grp.drawLine(bottom1.x + scrollX, bottom1.y + scrollY, 
+					left2.x + scrollX, left2.y + scrollY);
+			}
 		}
 
 		if (dragging) {
@@ -286,20 +330,20 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 						case 0:
 						case 1:
 						case 2:
-							level = 0;
-							break;
+						level = 0;
+						break;
 						case 3:
 						case 4:
 						case 6:
-							level = 2;
-							break;
+						level = 2;
+						break;
 						case 5:
 						case 7:
-							level = 1;
-							break;
+						level = 1;
+						break;
 						default:
-							level = 0;
-							break;
+						level = 0;
+						break;
 					}
 					continue;
 				}

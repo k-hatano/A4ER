@@ -9,6 +9,9 @@ public class Entity {
 	public int logicalNameWidth;
 	public int typeWidth;
 
+	public int tmpWidth;
+	public int tmpHeight;
+
 	public Entity() {
 		super();
 		positions = new ArrayList<Position>();
