@@ -247,16 +247,13 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 				final Pattern p1 = Pattern.compile("^Position=\\\"(.*)\\\",(\\d+),(\\d+)");
 				Matcher m1 = p1.matcher(str);
 				if (m1.find()) {
-					String page = m1.group(1);
+					String page = m1.group(1).toUpperCase();
 
 					Position position = new Position();
 					position.x = Integer.parseInt(m1.group(2));
 					position.y = Integer.parseInt(m1.group(3));
 					position.page = page;
 					entity.positions.add(position);
-					if (lPages.indexOf(page) < 0) {
-						lPages.add(0, page);
-					}
 
 					continue;
 				}
@@ -345,6 +342,13 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 						level = 0;
 						break;
 					}
+					continue;
+				}
+
+				final Pattern p10 = Pattern.compile("^PageInfo=\"([^\"]*)\"");
+				Matcher m10 = p10.matcher(str);
+				if (m10.find()) {
+					lPages.add(0, m10.group(1).toUpperCase());
 					continue;
 				}
 			}
