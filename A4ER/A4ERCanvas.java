@@ -166,32 +166,32 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 
 			if (minDist == left1.manhattanDistanceTo(right2)) {
 				grp.drawLine(left1.x + scrollX, left1.y + scrollY, 
-					right2.x + scrollX, right2.y + scrollY);
-				grp.drawLine(left1.x + scrollX, left1.y + scrollY, 
-					right2.x + scrollX, right2.y + scrollY);
-				grp.drawLine(left1.x + scrollX, left1.y + scrollY, 
+					(left1.x + right2.x) / 2 + scrollX, left1.y + scrollY);
+				grp.drawLine((left1.x + right2.x) / 2 + scrollX, left1.y + scrollY, 
+					(left1.x + right2.x) / 2 + scrollX, right2.y + scrollY);
+				grp.drawLine((left1.x + right2.x) / 2 + scrollX, right2.y + scrollY, 
 					right2.x + scrollX, right2.y + scrollY);
 			} else if (minDist == top1.manhattanDistanceTo(bottom2))  {
 				grp.drawLine(top1.x + scrollX, top1.y + scrollY, 
-					bottom2.x + scrollX, bottom2.y + scrollY);
-				grp.drawLine(top1.x + scrollX, top1.y + scrollY, 
-					bottom2.x + scrollX, bottom2.y + scrollY);
-				grp.drawLine(top1.x + scrollX, top1.y + scrollY, 
+					top1.x + scrollX, (top1.y + bottom2.y) / 2 + scrollY);
+				grp.drawLine(top1.x + scrollX, (top1.y + bottom2.y) / 2 + scrollY, 
+					bottom2.x + scrollX, (top1.y + bottom2.y) / 2 + scrollY);
+				grp.drawLine(bottom2.x + scrollX, (top1.y + bottom2.y) / 2 + scrollY, 
 					bottom2.x + scrollX, bottom2.y + scrollY);
 			} else if (minDist == right1.manhattanDistanceTo(left2))  {
 				grp.drawLine(right1.x + scrollX, right1.y + scrollY, 
-					left2.x + scrollX, left2.y + scrollY);
-				grp.drawLine(right1.x + scrollX, right1.y + scrollY, 
-					left2.x + scrollX, left2.y + scrollY);
-				grp.drawLine(right1.x + scrollX, right1.y + scrollY,
+					(right1.x +left2.x) / 2 + scrollX, right1.y + scrollY);
+				grp.drawLine((right1.x +left2.x) / 2 + scrollX, right1.y + scrollY, 
+					(right1.x +left2.x) / 2 + scrollX, left2.y + scrollY);
+				grp.drawLine((right1.x +left2.x) / 2 + scrollX, left2.y + scrollY,
 					left2.x + scrollX, left2.y + scrollY);
 			} else {
 				grp.drawLine(bottom1.x + scrollX, bottom1.y + scrollY, 
+					bottom1.x + scrollX, (bottom1.y + top2.y) / 2 + scrollY);
+				grp.drawLine(bottom1.x + scrollX, (bottom1.y + top2.y) / 2 + scrollY, 
+					top2.x + scrollX, (bottom1.y + top2.y) / 2 + scrollY);
+				grp.drawLine(top2.x + scrollX, (bottom1.y + top2.y) / 2 + scrollY, 
 					top2.x + scrollX, top2.y + scrollY);
-				grp.drawLine(bottom1.x + scrollX, bottom1.y + scrollY, 
-					top2.x + scrollX, top2.y + scrollY);
-				grp.drawLine(bottom1.x + scrollX, bottom1.y + scrollY, 
-					left2.x + scrollX, left2.y + scrollY);
 			}
 		}
 
