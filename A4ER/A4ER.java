@@ -9,8 +9,9 @@ import javax.swing.*;
 public class A4ER extends JFrame implements ActionListener {
 	JPanel pHeaderPanel;
 	JMenuBar mbMenuBar;
-	JMenu mFile,mEdit;
+	JMenu mFile,mEdit,mERDiagram;
 	JMenuItem miOpen,miQuit;
+	JCheckBoxMenuItem miAntialiasing;
 	JComboBox cbPage, cbLevel;
 	JMenuItem miEntitiesList;
 	A4ERCanvas a4erCanvas;
@@ -42,6 +43,12 @@ public class A4ER extends JFrame implements ActionListener {
 		miEntitiesList.addActionListener(this);
 		mEdit.add(miEntitiesList);
 		mbMenuBar.add(mEdit);
+
+		mERDiagram = new JMenu("ER Diagram");
+		miAntialiasing = new JCheckBoxMenuItem("Antialiasing");
+		miAntialiasing.addActionListener(this);
+		mERDiagram.add(miAntialiasing);
+		mbMenuBar.add(mERDiagram);
 
 		setJMenuBar(mbMenuBar);
 
@@ -90,6 +97,8 @@ public class A4ER extends JFrame implements ActionListener {
 			a4erCanvas.showImportFileDialog();
 		} else if (arg0.getSource() == miEntitiesList) {
 			a4erCanvas.showEntitiesList();
+		} else if (arg0.getSource() == miAntialiasing) {
+			a4erCanvas.repaint();
 		}
 	}
 

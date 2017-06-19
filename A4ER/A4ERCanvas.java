@@ -39,6 +39,11 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 		Image img = createImage(w,h);
 		Graphics2D grp = (Graphics2D)(img.getGraphics());
 
+		if (parent.miAntialiasing.getState()) {
+			grp.setRenderingHint(RenderingHints.KEY_ANTIALIASING, 
+            	            RenderingHints.VALUE_ANTIALIAS_ON);
+		}
+
 		String currentPage = (String) parent.cbPage.getSelectedItem();
 		FontMetrics metrics = grp.getFontMetrics();
 
