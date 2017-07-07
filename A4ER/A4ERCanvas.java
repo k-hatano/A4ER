@@ -7,7 +7,7 @@ import java.util.regex.*;
 import javax.swing.*;
 import javax.swing.filechooser.*;
 
-public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionListener {
+public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionListener, MouseWheelListener {
 
 	A4ER parent;
 	ArrayList<Entity> lEREntities = new ArrayList<Entity>();
@@ -20,12 +20,16 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 	int clickedX, clickedY;
 	boolean dragging = false;
 
+	long lastClickedTime = 0;
+	int selectedIndex = 0;
+
 	File lastFile = null;
 
 	public A4ERCanvas(A4ER a4er) {
 		parent = a4er;
 		addMouseListener(this);
 		addMouseMotionListener(this);
+		addMouseWheelListener(this);
 	}
 
 	public void paint(final Graphics g){
@@ -59,7 +63,7 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 
 			grp.drawString(item.logicalName, 
 				position.x + scrollX,
-				position.y + scrollY);
+				position.y - 2 + scrollY);
 
 			if (item.physicalNameWidth == 0) {
 				int physicalNameWidth = 0;
@@ -91,14 +95,14 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 				}
 			}
 
-			int left = position.x + scrollX;
+			int left = position.x + scrollX - 2;
 			int top = position.y + scrollY;
-			int width = item.logicalNameWidth;
-			int height = lERFields.get(item.physicalName).size() * 16;
+			int width = item.logicalNameWidth + 8;
+			int height = lERFields.get(item.physicalName).size() * 16 + 2;
 			if (level == 1) {
-				width = item.logicalNameWidth + item.physicalNameWidth;
+				width += item.physicalNameWidth;
 			} else if (level == 2) {
-				width = item.logicalNameWidth + item.typeWidth;
+				width += item.typeWidth;
 			}
 			item.tmpWidth = width;
 			item.tmpHeight = height;
@@ -134,9 +138,9 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 				y += 16;
 				grp.drawString(item.name, x, y);
 				if (level == 1) {
-					grp.drawString(item.key, x + entity.logicalNameWidth, y);
+					grp.drawString(item.key, x + entity.logicalNameWidth + 4, y);
 				} else if (level == 2) {
-					grp.drawString(item.type, x + entity.logicalNameWidth, y);
+					grp.drawString(item.type, x + entity.logicalNameWidth + 4, y);
 				}
 			}
 		}
@@ -164,26 +168,26 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 			Point right2 = new Point(position2.x + entity2.tmpWidth , (position2.y + position2.y + entity2.tmpHeight)/2);
 			Point bottom2 = new Point((position2.x + position2.x + entity2.tmpWidth)/2 , position2.y + entity2.tmpHeight);
 
-			int minDist = (int)Math.min(left1.manhattanDistanceTo(right2),
-				Math.min(top1.manhattanDistanceTo(bottom2),
-					Math.min(right1.manhattanDistanceTo(left2),
-						bottom1.manhattanDistanceTo(top2))));
+			int minDist = (int)Math.min(left1.manhattanDistanceTo(right2, Point.SITUATION_LEFT_TO_RIGHT),
+				Math.min(top1.manhattanDistanceTo(bottom2, Point.SITUATION_TOP_TO_BOTTOM),
+					Math.min(right1.manhattanDistanceTo(left2, Point.SITUATION_RIGHT_TO_LEFT),
+						bottom1.manhattanDistanceTo(top2, Point.SITUATION_BOTTOM_TO_TOP))));
 
-			if (minDist == left1.manhattanDistanceTo(right2)) {
+			if (minDist == left1.manhattanDistanceTo(right2, Point.SITUATION_LEFT_TO_RIGHT)) {
 				grp.drawLine(left1.x + scrollX, left1.y + scrollY, 
 					(left1.x + right2.x) / 2 + scrollX, left1.y + scrollY);
 				grp.drawLine((left1.x + right2.x) / 2 + scrollX, left1.y + scrollY, 
 					(left1.x + right2.x) / 2 + scrollX, right2.y + scrollY);
 				grp.drawLine((left1.x + right2.x) / 2 + scrollX, right2.y + scrollY, 
 					right2.x + scrollX, right2.y + scrollY);
-			} else if (minDist == top1.manhattanDistanceTo(bottom2))  {
+			} else if (minDist == top1.manhattanDistanceTo(bottom2, Point.SITUATION_TOP_TO_BOTTOM))  {
 				grp.drawLine(top1.x + scrollX, top1.y + scrollY, 
 					top1.x + scrollX, (top1.y + bottom2.y) / 2 + scrollY);
 				grp.drawLine(top1.x + scrollX, (top1.y + bottom2.y) / 2 + scrollY, 
 					bottom2.x + scrollX, (top1.y + bottom2.y) / 2 + scrollY);
 				grp.drawLine(bottom2.x + scrollX, (top1.y + bottom2.y) / 2 + scrollY, 
 					bottom2.x + scrollX, bottom2.y + scrollY);
-			} else if (minDist == right1.manhattanDistanceTo(left2))  {
+			} else if (minDist == right1.manhattanDistanceTo(left2, Point.SITUATION_RIGHT_TO_LEFT))  {
 				grp.drawLine(right1.x + scrollX, right1.y + scrollY, 
 					(right1.x +left2.x) / 2 + scrollX, right1.y + scrollY);
 				grp.drawLine((right1.x +left2.x) / 2 + scrollX, right1.y + scrollY, 
@@ -371,6 +375,11 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 
 	@Override
 	public void mouseClicked(MouseEvent arg0) {
+		if (System.currentTimeMillis() - lastClickedTime < 1000) {
+			scrollX = 0;
+			scrollY = 0;
+		}
+		lastClickedTime = System.currentTimeMillis();
 	}
 
 	@Override
@@ -409,6 +418,7 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 				scrollX = originalX + (arg0.getX() - clickedX);
 				scrollY = originalY + (arg0.getY() - clickedY);
 			}
+			selectedIndex = 0;
 			repaint();
 		}
 	}
@@ -416,6 +426,17 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 	@Override
 	public void mouseMoved(MouseEvent arg0) {
 
+	}
+
+	@Override
+	public void mouseWheelMoved(MouseWheelEvent arg0) {
+		if (arg0.isShiftDown()) {
+			scrollX += arg0.getWheelRotation();
+		} else {
+			scrollY += arg0.getWheelRotation();
+		}
+		selectedIndex = 0;
+		repaint();
 	}
 
 	public int showEntitiesList() {
@@ -439,7 +460,7 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 			JOptionPane.INFORMATION_MESSAGE,
 			null,
 			entities,
-			entities[0]);
+			entities[selectedIndex]);
 		
 		if (result != null && result.length() > 0) {
 			for (Entity item : lEREntities) {
@@ -448,6 +469,7 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 					parent.cbPage.setSelectedItem(position.page);
 					scrollX = -position.x + 64;
 					scrollY = -position.y + 64;
+					this.selectedIndex = entitiesList.indexOf(result);
 					repaint();
 					break;
 				}
