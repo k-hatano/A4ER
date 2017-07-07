@@ -20,6 +20,9 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 	int clickedX, clickedY;
 	boolean dragging = false;
 
+	int xRate = 2;
+	int yRate = 2;
+
 	long lastClickedTime = 0;
 	int selectedIndex = 0;
 
@@ -49,6 +52,9 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 		}
 
 		String currentPage = (String) parent.cbPage.getSelectedItem();
+		if (currentPage != null) {
+			currentPage = currentPage.toUpperCase();
+		}
 		FontMetrics metrics = grp.getFontMetrics();
 
 		grp.setColor(Color.white);
@@ -325,6 +331,7 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 					entity = new Entity();
 					fields = new ArrayList<Field>();
 					field = new Field();
+					relation = new Relation();
 					continue;
 				}
 
@@ -358,6 +365,14 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 				Matcher m10 = p10.matcher(str);
 				if (m10.find()) {
 					lPages.add(0, m10.group(1).toUpperCase());
+					continue;
+				}
+
+				final Pattern p11 = Pattern.compile("^FontSize=(\\d+)");
+				Matcher m11 = p11.matcher(str);
+				if (m11.find()) {
+					this.xRate = Integer.parseInt(m11.group(1)) / 3;
+					this.yRate = Integer.parseInt(m11.group(1)) / 4;
 					continue;
 				}
 			}
