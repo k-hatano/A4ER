@@ -7,7 +7,7 @@ import java.util.regex.*;
 import javax.swing.*;
 import javax.swing.filechooser.*;
 
-public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionListener, MouseWheelListener {
+public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener {
 
 	A4ER parent;
 	ArrayList<Entity> lEREntities = new ArrayList<Entity>();
@@ -33,6 +33,7 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 		addMouseListener(this);
 		addMouseMotionListener(this);
 		addMouseWheelListener(this);
+		addKeyListener(this);
 	}
 
 	public void paint(final Graphics g){
@@ -213,6 +214,8 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 		if (dragging) {
 			grp.setColor(Color.red);
 			grp.drawRect(scrollX, scrollY, maxWidth - scrollX, maxHeight - scrollY);
+
+			grp.drawString("" + (-scrollX) + "," + (-scrollY), 2, 16);
 		}
 
 		g.drawImage(img, 0, 0, this);
@@ -452,6 +455,46 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 		}
 		selectedIndex = 0;
 		repaint();
+	}
+
+	@Override
+	public void keyPressed(KeyEvent arg0){
+		int keyCode = arg0.getKeyCode();
+		switch (keyCode) {
+			case KeyEvent.VK_UP:
+			scrollY -= 8;
+			repaint();
+			break;
+			case KeyEvent.VK_DOWN:
+			scrollY += 8;
+			repaint();
+			break;
+			case KeyEvent.VK_LEFT:
+			scrollX -= 8;
+			repaint();
+			break;
+			case KeyEvent.VK_RIGHT:
+			scrollX += 8;
+			repaint();
+			break;
+			case KeyEvent.VK_BACK_SPACE :
+			scrollX = 0;
+			scrollY = 0;
+			repaint();
+			break;
+			default:
+			break;
+		}
+	}
+
+	@Override
+	public void keyReleased(KeyEvent arg0){
+
+	}
+
+	@Override
+	public void keyTyped(KeyEvent arg0){
+		
 	}
 
 	public int showEntitiesList() {
