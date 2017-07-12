@@ -20,8 +20,8 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 	int clickedX, clickedY;
 	boolean dragging = false;
 
-	int xRate = 2;
-	int yRate = 2;
+	float xRate = 1.6f;
+	float yRate = 1.6f;
 
 	long lastClickedTime = 0;
 	int selectedIndex = 0;
@@ -69,8 +69,8 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 			}
 
 			grp.drawString(item.logicalName, 
-				position.x + scrollX,
-				position.y - 2 + scrollY);
+				(int)(position.x / xRate + scrollX),
+				(int)(position.y / yRate - 2 + scrollY));
 
 			if (item.physicalNameWidth == 0) {
 				int physicalNameWidth = 0;
@@ -102,8 +102,8 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 				}
 			}
 
-			int left = position.x + scrollX - 2;
-			int top = position.y + scrollY;
+			int left = (int)(position.x / xRate + scrollX - 2);
+			int top = (int)(position.y / yRate + scrollY);
 			int width = item.logicalNameWidth + 8;
 			int height = lERFields.get(item.physicalName).size() * 16 + 2;
 			if (level == 1) {
@@ -139,8 +139,8 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 			}
 
 			ArrayList<Field> fields = lERFields.get(key);
-			int x = position.x + scrollX;
-			int y = position.y + scrollY;
+			int x = (int)(position.x / xRate + scrollX);
+			int y = (int)(position.y / yRate + scrollY);
 			for (Field item : fields) {
 				y += 16;
 				grp.drawString(item.name, x, y);
@@ -165,15 +165,31 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 				continue;
 			}
 
-			Point left1 = new Point(position1.x , (position1.y + position1.y + entity1.tmpHeight) / 2);
-			Point top1 = new Point((position1.x + position1.x + entity1.tmpWidth)/2 , position1.y);
-			Point right1 = new Point(position1.x + entity1.tmpWidth , (position1.y + position1.y + entity1.tmpHeight)/2);
-			Point bottom1 = new Point((position1.x + position1.x + entity1.tmpWidth)/2 , position1.y + entity1.tmpHeight);
+			Position tmpPosition1 = new Position(position1);
+			Position tmpPosition2 = new Position(position2);
 
-			Point left2 = new Point(position2.x , (position2.y + position2.y + entity2.tmpHeight) / 2);
-			Point top2 = new Point((position2.x + position2.x + entity2.tmpWidth)/2 , position2.y);
-			Point right2 = new Point(position2.x + entity2.tmpWidth , (position2.y + position2.y + entity2.tmpHeight)/2);
-			Point bottom2 = new Point((position2.x + position2.x + entity2.tmpWidth)/2 , position2.y + entity2.tmpHeight);
+			tmpPosition1.x = (int)(tmpPosition1.x / xRate);
+			tmpPosition1.y = (int)(tmpPosition1.y / yRate);
+			tmpPosition2.x = (int)(tmpPosition2.x / xRate);
+			tmpPosition2.y = (int)(tmpPosition2.y / yRate);
+
+			Point left1 = new Point(tmpPosition1.x , 
+				(tmpPosition1.y + tmpPosition1.y + entity1.tmpHeight) / 2);
+			Point top1 = new Point((tmpPosition1.x + tmpPosition1.x + entity1.tmpWidth)/2 ,
+				tmpPosition1.y);
+			Point right1 = new Point(tmpPosition1.x + entity1.tmpWidth ,
+				(tmpPosition1.y + tmpPosition1.y + entity1.tmpHeight)/2);
+			Point bottom1 = new Point((tmpPosition1.x + tmpPosition1.x + entity1.tmpWidth)/2 , 
+				tmpPosition1.y + entity1.tmpHeight);
+
+			Point left2 = new Point(tmpPosition2.x ,
+				(tmpPosition2.y + tmpPosition2.y + entity2.tmpHeight) / 2);
+			Point top2 = new Point((tmpPosition2.x + tmpPosition2.x + entity2.tmpWidth)/2 ,
+				tmpPosition2.y);
+			Point right2 = new Point(tmpPosition2.x + entity2.tmpWidth ,
+				(tmpPosition2.y + tmpPosition2.y + entity2.tmpHeight)/2);
+			Point bottom2 = new Point((tmpPosition2.x + tmpPosition2.x + entity2.tmpWidth)/2 ,
+				 tmpPosition2.y + entity2.tmpHeight);
 
 			int minDist = (int)Math.min(left1.manhattanDistanceTo(right2, Point.SITUATION_LEFT_TO_RIGHT),
 				Math.min(top1.manhattanDistanceTo(bottom2, Point.SITUATION_TOP_TO_BOTTOM),
@@ -371,13 +387,13 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 					continue;
 				}
 
-				final Pattern p11 = Pattern.compile("^FontSize=(\\d+)");
-				Matcher m11 = p11.matcher(str);
-				if (m11.find()) {
-					this.xRate = Integer.parseInt(m11.group(1)) / 3;
-					this.yRate = Integer.parseInt(m11.group(1)) / 4;
-					continue;
-				}
+				// final Pattern p11 = Pattern.compile("^FontSize=(\\d+)");
+				// Matcher m11 = p11.matcher(str);
+				// if (m11.find()) {
+				// 	this.xRate = Integer.parseInt(m11.group(1)) / 3;
+				// 	this.yRate = Integer.parseInt(m11.group(1)) / 4;
+				// 	continue;
+				// }
 			}
 
 			parent.cbPage.removeAllItems();
