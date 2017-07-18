@@ -20,8 +20,11 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 	int clickedX, clickedY;
 	boolean dragging = false;
 
-	float xRate = 1.6f;
-	float yRate = 1.6f;
+	public int maxWidth = 0;
+	public int maxHeight = 0;
+
+	float xRate = 1.4f;
+	float yRate = 1.4f;
 
 	long lastClickedTime = 0;
 	int selectedIndex = 0;
@@ -39,9 +42,9 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 	public void paint(final Graphics g){
 		int w = this.getWidth();
 		int h = this.getHeight();
+		maxWidth = 0;
+		maxHeight = 0;
 
-		int maxWidth = 0;
-		int maxHeight = 0;
 		int level = parent.cbLevel.getSelectedIndex();
 
 		Image img = createImage(w,h);
@@ -71,6 +74,14 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 			grp.drawString(item.logicalName, 
 				(int)(position.x / xRate + scrollX),
 				(int)(position.y / yRate - 2 + scrollY));
+
+			if (level == 1) {
+				int tableLogicalNameWidth = metrics.getStringBounds(item.logicalName, grp).getBounds().width;
+
+				grp.drawString(item.physicalName, 
+					(int)(position.x / xRate + tableLogicalNameWidth + 8 + scrollX),
+					(int)(position.y / yRate - 2 + scrollY));
+			}
 
 			if (item.physicalNameWidth == 0) {
 				int physicalNameWidth = 0;
@@ -175,20 +186,20 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 
 			Point left1 = new Point(tmpPosition1.x , 
 				(tmpPosition1.y + tmpPosition1.y + entity1.tmpHeight) / 2);
-			Point top1 = new Point((tmpPosition1.x + tmpPosition1.x + entity1.tmpWidth)/2 ,
+			Point top1 = new Point((tmpPosition1.x + tmpPosition1.x + entity1.tmpWidth) / 2 ,
 				tmpPosition1.y);
 			Point right1 = new Point(tmpPosition1.x + entity1.tmpWidth ,
-				(tmpPosition1.y + tmpPosition1.y + entity1.tmpHeight)/2);
-			Point bottom1 = new Point((tmpPosition1.x + tmpPosition1.x + entity1.tmpWidth)/2 , 
+				(tmpPosition1.y + tmpPosition1.y + entity1.tmpHeight) / 2);
+			Point bottom1 = new Point((tmpPosition1.x + tmpPosition1.x + entity1.tmpWidth) / 2 , 
 				tmpPosition1.y + entity1.tmpHeight);
 
 			Point left2 = new Point(tmpPosition2.x ,
 				(tmpPosition2.y + tmpPosition2.y + entity2.tmpHeight) / 2);
-			Point top2 = new Point((tmpPosition2.x + tmpPosition2.x + entity2.tmpWidth)/2 ,
+			Point top2 = new Point((tmpPosition2.x + tmpPosition2.x + entity2.tmpWidth) / 2 ,
 				tmpPosition2.y);
 			Point right2 = new Point(tmpPosition2.x + entity2.tmpWidth ,
-				(tmpPosition2.y + tmpPosition2.y + entity2.tmpHeight)/2);
-			Point bottom2 = new Point((tmpPosition2.x + tmpPosition2.x + entity2.tmpWidth)/2 ,
+				(tmpPosition2.y + tmpPosition2.y + entity2.tmpHeight) / 2);
+			Point bottom2 = new Point((tmpPosition2.x + tmpPosition2.x + entity2.tmpWidth) / 2 ,
 				 tmpPosition2.y + entity2.tmpHeight);
 
 			int minDist = (int)Math.min(left1.manhattanDistanceTo(right2, Point.SITUATION_LEFT_TO_RIGHT),
@@ -196,33 +207,68 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 					Math.min(right1.manhattanDistanceTo(left2, Point.SITUATION_RIGHT_TO_LEFT),
 						bottom1.manhattanDistanceTo(top2, Point.SITUATION_BOTTOM_TO_TOP))));
 
-			if (minDist == left1.manhattanDistanceTo(right2, Point.SITUATION_LEFT_TO_RIGHT)) {
+			int rab1 = relation.bar1;
+			int rab2 = relation.bar2;
+			int rab3 = relation.bar3;
+
+			int bar1 = 1000 - rab1;
+			int bar2 = 1000 - rab2;
+			int bar3 = 1000 - rab3;
+
+			if (entity1.physicalName.equals(entity2.physicalName)) {
+				grp.drawLine(right1.x + scrollX, (top1.y * bar1 + bottom1.y * rab1) / 1000 + scrollY, 
+					right1.x + 16 + scrollX, (top1.y * bar1 + bottom1.y * rab1) / 1000 + scrollY);
+				grp.drawLine(right1.x + 16 + scrollX, (top1.y * bar1 + bottom1.y * rab1) / 1000 + scrollY, 
+					right1.x + 16 + scrollX, (top1.y * bar3 + bottom1.y * rab3) / 1000 + scrollY);
+				grp.drawLine(right2.x + 16 + scrollX, (top2.y * bar3 + bottom2.y * rab3) / 1000 + scrollY, 
+					right2.x + scrollX, (top2.y * bar3 + bottom2.y * rab3) / 1000 + scrollY);
+			} else if (minDist == left1.manhattanDistanceTo(right2, Point.SITUATION_LEFT_TO_RIGHT)) {
+				left1 = new Point(tmpPosition1.x , 
+					(tmpPosition1.y * bar1 + (tmpPosition1.y + entity1.tmpHeight) * rab1) / 1000);
+				right2 = new Point(tmpPosition2.x + entity2.tmpWidth ,
+					(tmpPosition2.y * bar3 + (tmpPosition2.y + entity2.tmpHeight) * rab3) / 1000);
+
 				grp.drawLine(left1.x + scrollX, left1.y + scrollY, 
-					(left1.x + right2.x) / 2 + scrollX, left1.y + scrollY);
-				grp.drawLine((left1.x + right2.x) / 2 + scrollX, left1.y + scrollY, 
-					(left1.x + right2.x) / 2 + scrollX, right2.y + scrollY);
-				grp.drawLine((left1.x + right2.x) / 2 + scrollX, right2.y + scrollY, 
+					(left1.x * bar2 + right2.x * rab2) / 1000 + scrollX, left1.y + scrollY);
+				grp.drawLine((left1.x * bar2 + right2.x * rab2) / 1000 + scrollX, left1.y + scrollY, 
+					(left1.x * bar2 + right2.x * rab2) / 1000 + scrollX, right2.y + scrollY);
+				grp.drawLine((left1.x * bar2 + right2.x * rab2) / 1000 + scrollX, right2.y + scrollY, 
 					right2.x + scrollX, right2.y + scrollY);
 			} else if (minDist == top1.manhattanDistanceTo(bottom2, Point.SITUATION_TOP_TO_BOTTOM))  {
+				top1 = new Point((tmpPosition1.x * bar1 + (tmpPosition1.x + entity1.tmpWidth) * rab1) / 1000 ,
+					tmpPosition1.y);
+				bottom2 = new Point((tmpPosition2.x * bar3 + (tmpPosition2.x + entity2.tmpWidth) * rab3) / 1000 ,
+					tmpPosition2.y + entity2.tmpHeight);
+
 				grp.drawLine(top1.x + scrollX, top1.y + scrollY, 
-					top1.x + scrollX, (top1.y + bottom2.y) / 2 + scrollY);
-				grp.drawLine(top1.x + scrollX, (top1.y + bottom2.y) / 2 + scrollY, 
-					bottom2.x + scrollX, (top1.y + bottom2.y) / 2 + scrollY);
-				grp.drawLine(bottom2.x + scrollX, (top1.y + bottom2.y) / 2 + scrollY, 
+					top1.x + scrollX, (top1.y * bar2 + bottom2.y * rab2) / 1000 + scrollY);
+				grp.drawLine(top1.x + scrollX, (top1.y * bar2 + bottom2.y * rab2) / 1000 + scrollY, 
+					bottom2.x + scrollX, (top1.y * bar2 + bottom2.y * rab2) / 1000 + scrollY);
+				grp.drawLine(bottom2.x + scrollX, (top1.y * bar2 + bottom2.y * rab2) / 1000 + scrollY, 
 					bottom2.x + scrollX, bottom2.y + scrollY);
 			} else if (minDist == right1.manhattanDistanceTo(left2, Point.SITUATION_RIGHT_TO_LEFT))  {
+				right1 = new Point(tmpPosition1.x + entity1.tmpWidth ,
+					(tmpPosition1.y * bar1 + (tmpPosition1.y + entity1.tmpHeight) * rab1) / 1000);
+				left2 = new Point(tmpPosition2.x ,
+					(tmpPosition2.y * bar3 + (tmpPosition2.y + entity2.tmpHeight) * rab3) / 1000);
+
 				grp.drawLine(right1.x + scrollX, right1.y + scrollY, 
-					(right1.x +left2.x) / 2 + scrollX, right1.y + scrollY);
-				grp.drawLine((right1.x +left2.x) / 2 + scrollX, right1.y + scrollY, 
-					(right1.x +left2.x) / 2 + scrollX, left2.y + scrollY);
-				grp.drawLine((right1.x +left2.x) / 2 + scrollX, left2.y + scrollY,
+					(right1.x * bar2 + left2.x * rab2) / 1000 + scrollX, right1.y + scrollY);
+				grp.drawLine((right1.x * bar2 + left2.x * rab2) / 1000 + scrollX, right1.y + scrollY, 
+					(right1.x * bar2 +left2.x * rab2) / 1000 + scrollX, left2.y + scrollY);
+				grp.drawLine((right1.x * bar2 + left2.x * rab2) / 1000 + scrollX, left2.y + scrollY,
 					left2.x + scrollX, left2.y + scrollY);
 			} else {
+				bottom1 = new Point((tmpPosition1.x * bar1 + (tmpPosition1.x + entity1.tmpWidth) * rab1) / 1000 , 
+					tmpPosition1.y + entity1.tmpHeight);
+				top2 = new Point((tmpPosition2.x * bar3 + (tmpPosition2.x + entity2.tmpWidth) * rab3) / 1000 ,
+					tmpPosition2.y);
+
 				grp.drawLine(bottom1.x + scrollX, bottom1.y + scrollY, 
-					bottom1.x + scrollX, (bottom1.y + top2.y) / 2 + scrollY);
-				grp.drawLine(bottom1.x + scrollX, (bottom1.y + top2.y) / 2 + scrollY, 
-					top2.x + scrollX, (bottom1.y + top2.y) / 2 + scrollY);
-				grp.drawLine(top2.x + scrollX, (bottom1.y + top2.y) / 2 + scrollY, 
+					bottom1.x + scrollX, (bottom1.y * bar2 + top2.y * rab2) / 1000 + scrollY);
+				grp.drawLine(bottom1.x + scrollX, (bottom1.y * bar2 + top2.y * rab2) / 1000 + scrollY, 
+					top2.x + scrollX, (bottom1.y * bar2 + top2.y * rab2) / 1000 + scrollY);
+				grp.drawLine(top2.x + scrollX, (bottom1.y * bar2 + top2.y * rab2) / 1000 + scrollY, 
 					top2.x + scrollX, top2.y + scrollY);
 			}
 		}
@@ -387,13 +433,27 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 					continue;
 				}
 
-				// final Pattern p11 = Pattern.compile("^FontSize=(\\d+)");
-				// Matcher m11 = p11.matcher(str);
-				// if (m11.find()) {
-				// 	this.xRate = Integer.parseInt(m11.group(1)) / 3;
-				// 	this.yRate = Integer.parseInt(m11.group(1)) / 4;
-				// 	continue;
-				// }
+				final Pattern p11 = Pattern.compile("^Bar1=(\\d+)");
+				Matcher m11 = p11.matcher(str);
+				if (m11.find()) {
+					relation.bar1 = Integer.parseInt(m11.group(1));
+					continue;
+				}
+
+				final Pattern p12 = Pattern.compile("^Bar2=(\\d+)");
+				Matcher m12 = p12.matcher(str);
+				if (m12.find()) {
+					relation.bar2 = Integer.parseInt(m12.group(1));
+					continue;
+				}
+
+				final Pattern p13 = Pattern.compile("^Bar3=(\\d+)");
+				Matcher m13 = p13.matcher(str);
+				if (m13.find()) {
+					relation.bar3 = Integer.parseInt(m13.group(1));
+					continue;
+				}
+				
 			}
 
 			parent.cbPage.removeAllItems();
@@ -410,8 +470,19 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 	@Override
 	public void mouseClicked(MouseEvent arg0) {
 		if (System.currentTimeMillis() - lastClickedTime < 1000) {
-			scrollX = 0;
-			scrollY = 0;
+			if (scrollX > 0) {
+				scrollX = 0;
+			}
+			if (scrollY > 0) {
+				scrollY = 0;
+			}
+			if (scrollX < -(this.getWidth() + maxWidth)) {
+				scrollX = -(this.getWidth() + maxWidth);
+			}
+			if (scrollY < -(this.getHeight() + maxHeight)) {
+				scrollY = -(this.getHeight() + maxHeight);
+			}
+			repaint();
 		}
 		lastClickedTime = System.currentTimeMillis();
 	}
@@ -541,8 +612,8 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 				if (item.logicalName.equals(result)) {
 					Position position = item.positions.get(0);
 					parent.cbPage.setSelectedItem(position.page);
-					scrollX = -position.x + 64;
-					scrollY = -position.y + 64;
+					scrollX = (int)(-position.x / xRate + 64);
+					scrollY = (int)(-position.y / yRate + 64);
 					this.selectedIndex = entitiesList.indexOf(result);
 					repaint();
 					break;

@@ -4,6 +4,7 @@ class Point {
 	public static final int SITUATION_TOP_TO_BOTTOM = 2;
 	public static final int SITUATION_RIGHT_TO_LEFT = 3;
 	public static final int SITUATION_BOTTOM_TO_TOP = 4;
+	public static final int SITUATION_SELF_TO_SELF = 5;
 	public static final int FAR_AWAY = 99999;
 
 	public int x;
