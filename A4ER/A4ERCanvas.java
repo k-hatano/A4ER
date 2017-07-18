@@ -476,11 +476,11 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 			if (scrollY > 0) {
 				scrollY = 0;
 			}
-			if (scrollX < -(this.getWidth() + maxWidth)) {
-				scrollX = -(this.getWidth() + maxWidth);
+			if (scrollX < -(this.getWidth() + maxWidth / xRate)) {
+				scrollX = -(int)(this.getWidth() + maxWidth / xRate);
 			}
-			if (scrollY < -(this.getHeight() + maxHeight)) {
-				scrollY = -(this.getHeight() + maxHeight);
+			if (scrollY < -(this.getHeight() + maxHeight / yRate)) {
+				scrollY = -(int)(this.getHeight() + maxHeight / yRate);
 			}
 			repaint();
 		}
@@ -549,24 +549,46 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 		int keyCode = arg0.getKeyCode();
 		switch (keyCode) {
 			case KeyEvent.VK_UP:
-			scrollY -= 8;
+			if (arg0.isAltDown()) {
+				scrollY += 32;
+			} else {
+				scrollY += 8;
+			}
 			repaint();
 			break;
 			case KeyEvent.VK_DOWN:
-			scrollY += 8;
+			if (arg0.isAltDown()) {
+				scrollY -= 32;
+			} else {
+				scrollY -= 8;
+			}
 			repaint();
 			break;
 			case KeyEvent.VK_LEFT:
-			scrollX -= 8;
+			if (arg0.isAltDown()) {
+				scrollX += 32;
+			} else {
+				scrollX += 8;
+			}
 			repaint();
 			break;
 			case KeyEvent.VK_RIGHT:
-			scrollX += 8;
+			if (arg0.isAltDown()) {
+				scrollX -= 32;
+			} else {
+				scrollX -= 8;
+			}
 			repaint();
 			break;
 			case KeyEvent.VK_BACK_SPACE :
+			case KeyEvent.VK_HOME :
 			scrollX = 0;
 			scrollY = 0;
+			repaint();
+			break;
+			case KeyEvent.VK_END :
+			scrollX = -(int)(this.getWidth() + maxWidth / xRate);
+			scrollY = -(int)(this.getHeight() + maxHeight / yRate);
 			repaint();
 			break;
 			default:
