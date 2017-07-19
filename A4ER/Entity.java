@@ -9,6 +9,8 @@ public class Entity {
 	public int logicalNameWidth;
 	public int typeWidth;
 
+	public int tmpLeft;
+	public int tmpTop;
 	public int tmpWidth;
 	public int tmpHeight;
 

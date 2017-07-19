@@ -49,12 +49,14 @@ public class A4ERImport {
 					continue;
 				}
 
-				final Pattern p2 = Pattern.compile("^Field=\\\"(.*?)\\\",\\\"(.*?)\\\",\\\"(.*?)\\\"");
+				final Pattern p2 = Pattern.compile("^Field=\\\"(.*?)\\\",\\\"(.*?)\\\",\\\"(.*?)\\\",(.*?),(.*?)");
 				Matcher m2 = p2.matcher(str);
 				if (m2.find()) {
 					field.logicalName = m2.group(1);
 					field.physicalName = m2.group(2);
 					field.type = m2.group(3);
+					field.notNull = m2.group(4);
+					field.key = m2.group(5);
 					fields.add(0, field);
 					field = new Field();
 					continue;

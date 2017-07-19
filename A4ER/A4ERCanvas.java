@@ -113,15 +113,17 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 				}
 			}
 
-			int left = (int)(position.x / xRate + scrollX - 2);
+			int left = (int)(position.x / xRate + scrollX - 6);
 			int top = (int)(position.y / yRate + scrollY);
-			int width = entity.logicalNameWidth + 8;
+			int width = entity.logicalNameWidth + 12;
 			int height = lERFields.get(entity.physicalName).size() * 16 + 2;
 			if (level == 1) {
 				width += entity.physicalNameWidth;
 			} else if (level == 2) {
 				width += entity.typeWidth;
 			}
+			entity.tmpLeft = left;
+			entity.tmpTop = top;
 			entity.tmpWidth = width;
 			entity.tmpHeight = height;
 
@@ -160,6 +162,10 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 				} else if (level == 2) {
 					grp.drawString(field.type, x + entity.logicalNameWidth + 4, y);
 				}
+
+				if (field.notNull != null && field.notNull.length() > 0) {
+					grp.drawRect(x - 4, y - 7, 2, 4);
+				}
 			}
 		}
 
@@ -176,31 +182,23 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 				continue;
 			}
 
-			Position tmpPosition1 = new Position(position1);
-			Position tmpPosition2 = new Position(position2);
+			Point left1 = new Point(entity1.tmpLeft , 
+				(entity1.tmpTop + entity1.tmpTop + entity1.tmpHeight) / 2);
+			Point top1 = new Point((entity1.tmpLeft  + entity1.tmpLeft + entity1.tmpWidth) / 2 ,
+				entity1.tmpTop);
+			Point right1 = new Point(entity1.tmpLeft + entity1.tmpWidth ,
+				(entity1.tmpTop + entity1.tmpTop + entity1.tmpHeight) / 2);
+			Point bottom1 = new Point((entity1.tmpLeft + entity1.tmpLeft + entity1.tmpWidth) / 2 , 
+				entity1.tmpTop + entity1.tmpHeight);
 
-			tmpPosition1.x = (int)(tmpPosition1.x / xRate);
-			tmpPosition1.y = (int)(tmpPosition1.y / yRate);
-			tmpPosition2.x = (int)(tmpPosition2.x / xRate);
-			tmpPosition2.y = (int)(tmpPosition2.y / yRate);
-
-			Point left1 = new Point(tmpPosition1.x , 
-				(tmpPosition1.y + tmpPosition1.y + entity1.tmpHeight) / 2);
-			Point top1 = new Point((tmpPosition1.x + tmpPosition1.x + entity1.tmpWidth) / 2 ,
-				tmpPosition1.y);
-			Point right1 = new Point(tmpPosition1.x + entity1.tmpWidth ,
-				(tmpPosition1.y + tmpPosition1.y + entity1.tmpHeight) / 2);
-			Point bottom1 = new Point((tmpPosition1.x + tmpPosition1.x + entity1.tmpWidth) / 2 , 
-				tmpPosition1.y + entity1.tmpHeight);
-
-			Point left2 = new Point(tmpPosition2.x ,
-				(tmpPosition2.y + tmpPosition2.y + entity2.tmpHeight) / 2);
-			Point top2 = new Point((tmpPosition2.x + tmpPosition2.x + entity2.tmpWidth) / 2 ,
-				tmpPosition2.y);
-			Point right2 = new Point(tmpPosition2.x + entity2.tmpWidth ,
-				(tmpPosition2.y + tmpPosition2.y + entity2.tmpHeight) / 2);
-			Point bottom2 = new Point((tmpPosition2.x + tmpPosition2.x + entity2.tmpWidth) / 2 ,
-				 tmpPosition2.y + entity2.tmpHeight);
+			Point left2 = new Point(entity2.tmpLeft ,
+				(entity2.tmpTop + entity2.tmpTop + entity2.tmpHeight) / 2);
+			Point top2 = new Point((entity2.tmpLeft + entity2.tmpLeft + entity2.tmpWidth) / 2 ,
+				entity2.tmpTop);
+			Point right2 = new Point(entity2.tmpLeft+ entity2.tmpWidth ,
+				(entity2.tmpTop + entity2.tmpTop + entity2.tmpHeight) / 2);
+			Point bottom2 = new Point((entity2.tmpLeft + entity2.tmpLeft + entity2.tmpWidth) / 2 ,
+				 entity2.tmpTop + entity2.tmpHeight);
 
 			int minDist = (int)Math.min(left1.manhattanDistanceTo(right2, Point.SITUATION_LEFT_TO_RIGHT),
 				Math.min(top1.manhattanDistanceTo(bottom2, Point.SITUATION_TOP_TO_BOTTOM),
@@ -218,64 +216,64 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 			int situation = Point.SITUATION_NONE;
 
 			if (entity1.physicalName.equals(entity2.physicalName)) {
-				grp.drawLine(right1.x + scrollX, (top1.y * bar1 + bottom1.y * rab1) / 1000 + scrollY, 
-					right1.x + 16 + scrollX, (top1.y * bar1 + bottom1.y * rab1) / 1000 + scrollY);
-				grp.drawLine(right1.x + 16 + scrollX, (top1.y * bar1 + bottom1.y * rab1) / 1000 + scrollY, 
-					right1.x + 16 + scrollX, (top1.y * bar3 + bottom1.y * rab3) / 1000 + scrollY);
-				grp.drawLine(right2.x + 16 + scrollX, (top2.y * bar3 + bottom2.y * rab3) / 1000 + scrollY, 
-					right2.x + scrollX, (top2.y * bar3 + bottom2.y * rab3) / 1000 + scrollY);
+				grp.drawLine(right1.x, (top1.y * bar1 + bottom1.y * rab1) / 1000, 
+					right1.x + 16, (top1.y * bar1 + bottom1.y * rab1) / 1000);
+				grp.drawLine(right1.x + 16, (top1.y * bar1 + bottom1.y * rab1) / 1000, 
+					right1.x + 16, (top1.y * bar3 + bottom1.y * rab3) / 1000);
+				grp.drawLine(right2.x + 16, (top2.y * bar3 + bottom2.y * rab3) / 1000, 
+					right2.x, (top2.y * bar3 + bottom2.y * rab3) / 1000);
 				situation = Point.SITUATION_SELF_TO_SELF;
 			} else if (minDist == left1.manhattanDistanceTo(right2, Point.SITUATION_LEFT_TO_RIGHT)) {
-				left1 = new Point(tmpPosition1.x , 
-					(tmpPosition1.y * bar1 + (tmpPosition1.y + entity1.tmpHeight) * rab1) / 1000);
-				right2 = new Point(tmpPosition2.x + entity2.tmpWidth ,
-					(tmpPosition2.y * bar3 + (tmpPosition2.y + entity2.tmpHeight) * rab3) / 1000);
+				left1 = new Point(entity1.tmpLeft , 
+					(entity1.tmpTop * bar1 + (entity1.tmpTop + entity1.tmpHeight) * rab1) / 1000);
+				right2 = new Point(entity2.tmpLeft + entity2.tmpWidth ,
+					(entity2.tmpTop * bar3 + (entity2.tmpTop + entity2.tmpHeight) * rab3) / 1000);
 
-				grp.drawLine(left1.x + scrollX, left1.y + scrollY, 
-					(left1.x * bar2 + right2.x * rab2) / 1000 + scrollX, left1.y + scrollY);
-				grp.drawLine((left1.x * bar2 + right2.x * rab2) / 1000 + scrollX, left1.y + scrollY, 
-					(left1.x * bar2 + right2.x * rab2) / 1000 + scrollX, right2.y + scrollY);
-				grp.drawLine((left1.x * bar2 + right2.x * rab2) / 1000 + scrollX, right2.y + scrollY, 
-					right2.x + scrollX, right2.y + scrollY);
+				grp.drawLine(left1.x, left1.y, 
+					(left1.x * bar2 + right2.x * rab2) / 1000, left1.y);
+				grp.drawLine((left1.x * bar2 + right2.x * rab2) / 1000, left1.y, 
+					(left1.x * bar2 + right2.x * rab2) / 1000, right2.y);
+				grp.drawLine((left1.x * bar2 + right2.x * rab2) / 1000, right2.y, 
+					right2.x, right2.y);
 				situation = Point.SITUATION_LEFT_TO_RIGHT;
 			} else if (minDist == top1.manhattanDistanceTo(bottom2, Point.SITUATION_TOP_TO_BOTTOM))  {
-				top1 = new Point((tmpPosition1.x * bar1 + (tmpPosition1.x + entity1.tmpWidth) * rab1) / 1000 ,
-					tmpPosition1.y);
-				bottom2 = new Point((tmpPosition2.x * bar3 + (tmpPosition2.x + entity2.tmpWidth) * rab3) / 1000 ,
-					tmpPosition2.y + entity2.tmpHeight);
+				top1 = new Point((entity1.tmpLeft * bar1 + (entity1.tmpLeft + entity1.tmpWidth) * rab1) / 1000 ,
+					entity1.tmpTop);
+				bottom2 = new Point((entity2.tmpLeft * bar3 + (entity2.tmpLeft + entity2.tmpWidth) * rab3) / 1000 ,
+					entity2.tmpTop + entity2.tmpHeight);
 
-				grp.drawLine(top1.x + scrollX, top1.y + scrollY, 
-					top1.x + scrollX, (top1.y * bar2 + bottom2.y * rab2) / 1000 + scrollY);
-				grp.drawLine(top1.x + scrollX, (top1.y * bar2 + bottom2.y * rab2) / 1000 + scrollY, 
-					bottom2.x + scrollX, (top1.y * bar2 + bottom2.y * rab2) / 1000 + scrollY);
-				grp.drawLine(bottom2.x + scrollX, (top1.y * bar2 + bottom2.y * rab2) / 1000 + scrollY, 
-					bottom2.x + scrollX, bottom2.y + scrollY);
+				grp.drawLine(top1.x, top1.y, 
+					top1.x, (top1.y * bar2 + bottom2.y * rab2) / 1000);
+				grp.drawLine(top1.x, (top1.y * bar2 + bottom2.y * rab2) / 1000, 
+					bottom2.x, (top1.y * bar2 + bottom2.y * rab2) / 1000);
+				grp.drawLine(bottom2.x, (top1.y * bar2 + bottom2.y * rab2) / 1000, 
+					bottom2.x, bottom2.y);
 				situation = Point.SITUATION_TOP_TO_BOTTOM;
 			} else if (minDist == right1.manhattanDistanceTo(left2, Point.SITUATION_RIGHT_TO_LEFT))  {
-				right1 = new Point(tmpPosition1.x + entity1.tmpWidth ,
-					(tmpPosition1.y * bar1 + (tmpPosition1.y + entity1.tmpHeight) * rab1) / 1000);
-				left2 = new Point(tmpPosition2.x ,
-					(tmpPosition2.y * bar3 + (tmpPosition2.y + entity2.tmpHeight) * rab3) / 1000);
+				right1 = new Point(entity1.tmpLeft + entity1.tmpWidth ,
+					(entity1.tmpTop * bar1 + (entity1.tmpTop + entity1.tmpHeight) * rab1) / 1000);
+				left2 = new Point(entity2.tmpLeft ,
+					(entity2.tmpTop * bar3 + (entity2.tmpTop + entity2.tmpHeight) * rab3) / 1000);
 
-				grp.drawLine(right1.x + scrollX, right1.y + scrollY, 
-					(right1.x * bar2 + left2.x * rab2) / 1000 + scrollX, right1.y + scrollY);
-				grp.drawLine((right1.x * bar2 + left2.x * rab2) / 1000 + scrollX, right1.y + scrollY, 
-					(right1.x * bar2 +left2.x * rab2) / 1000 + scrollX, left2.y + scrollY);
-				grp.drawLine((right1.x * bar2 + left2.x * rab2) / 1000 + scrollX, left2.y + scrollY,
-					left2.x + scrollX, left2.y + scrollY);
+				grp.drawLine(right1.x, right1.y, 
+					(right1.x * bar2 + left2.x * rab2) / 1000, right1.y);
+				grp.drawLine((right1.x * bar2 + left2.x * rab2) / 1000, right1.y, 
+					(right1.x * bar2 +left2.x * rab2) / 1000, left2.y);
+				grp.drawLine((right1.x * bar2 + left2.x * rab2) / 1000, left2.y,
+					left2.x, left2.y);
 				situation = Point.SITUATION_RIGHT_TO_LEFT;
 			} else {
-				bottom1 = new Point((tmpPosition1.x * bar1 + (tmpPosition1.x + entity1.tmpWidth) * rab1) / 1000 , 
-					tmpPosition1.y + entity1.tmpHeight);
-				top2 = new Point((tmpPosition2.x * bar3 + (tmpPosition2.x + entity2.tmpWidth) * rab3) / 1000 ,
-					tmpPosition2.y);
+				bottom1 = new Point((entity1.tmpLeft * bar1 + (entity1.tmpLeft + entity1.tmpWidth) * rab1) / 1000 , 
+					entity1.tmpTop + entity1.tmpHeight);
+				top2 = new Point((entity2.tmpLeft * bar3 + (entity2.tmpLeft + entity2.tmpWidth) * rab3) / 1000 ,
+					entity2.tmpTop);
 
-				grp.drawLine(bottom1.x + scrollX, bottom1.y + scrollY, 
-					bottom1.x + scrollX, (bottom1.y * bar2 + top2.y * rab2) / 1000 + scrollY);
-				grp.drawLine(bottom1.x + scrollX, (bottom1.y * bar2 + top2.y * rab2) / 1000 + scrollY, 
-					top2.x + scrollX, (bottom1.y * bar2 + top2.y * rab2) / 1000 + scrollY);
-				grp.drawLine(top2.x + scrollX, (bottom1.y * bar2 + top2.y * rab2) / 1000 + scrollY, 
-					top2.x + scrollX, top2.y + scrollY);
+				grp.drawLine(bottom1.x, bottom1.y, 
+					bottom1.x, (bottom1.y * bar2 + top2.y * rab2) / 1000);
+				grp.drawLine(bottom1.x, (bottom1.y * bar2 + top2.y * rab2) / 1000, 
+					top2.x, (bottom1.y * bar2 + top2.y * rab2) / 1000);
+				grp.drawLine(top2.x, (bottom1.y * bar2 + top2.y * rab2) / 1000, 
+					top2.x, top2.y);
 				situation = Point.SITUATION_BOTTOM_TO_TOP;
 			}
 
@@ -293,20 +291,20 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 			}
 
 			if (situation == Point.SITUATION_LEFT_TO_RIGHT) {
-				grp.drawString(relationType1, left1.x + scrollX - 4 - metrics.getStringBounds(relationType1, grp).getBounds().width, 
-					left1.y + scrollY - 4);
+				grp.drawString(relationType1, left1.x - 4 - metrics.getStringBounds(relationType1, grp).getBounds().width, 
+					left1.y - 4);
 			} else if (situation == Point.SITUATION_TOP_TO_BOTTOM) {
-				grp.drawString(relationType1, top1.x + scrollX + 4, 
-					top1.y + scrollY - 16);
+				grp.drawString(relationType1, top1.x + 4, 
+					top1.y - 16);
 			} else if (situation == Point.SITUATION_RIGHT_TO_LEFT) {
-				grp.drawString(relationType1, right1.x + scrollX + 4, 
-					right1.y + scrollY - 4);
+				grp.drawString(relationType1, right1.x + 4, 
+					right1.y - 4);
 			} else if (situation == Point.SITUATION_BOTTOM_TO_TOP) {
-				grp.drawString(relationType1, bottom1.x + scrollX + 4, 
-					bottom1.y + scrollY + 16);
+				grp.drawString(relationType1, bottom1.x + 4, 
+					bottom1.y + 16);
 			} else {
-				grp.drawString(relationType1, right1.x + scrollX + 4, 
-					(top1.y * bar1 + bottom1.y * rab1) / 1000 + scrollY - 4);
+				grp.drawString(relationType1, right1.x + 4, 
+					(top1.y * bar1 + bottom1.y * rab1) / 1000 - 4);
 			}
 
 			String relationType2 = "";
@@ -323,20 +321,20 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 			}
 
 			if (situation == Point.SITUATION_LEFT_TO_RIGHT) {
-				grp.drawString(relationType2, right2.x + scrollX + 4, 
-					right2.y + scrollY - 4);
+				grp.drawString(relationType2, right2.x + 4, 
+					right2.y - 4);
 			} else if (situation == Point.SITUATION_TOP_TO_BOTTOM) {
-				grp.drawString(relationType2, bottom2.x + scrollX + 4, 
-					bottom2.y + scrollY + 16);
+				grp.drawString(relationType2, bottom2.x + 4, 
+					bottom2.y + 16);
 			} else if (situation == Point.SITUATION_RIGHT_TO_LEFT) {
-				grp.drawString(relationType2, left2.x + scrollX - 4 - metrics.getStringBounds(relationType2, grp).getBounds().width, 
-					left2.y + scrollY - 4);
+				grp.drawString(relationType2, left2.x - 4 - metrics.getStringBounds(relationType2, grp).getBounds().width, 
+					left2.y - 4);
 			} else if (situation == Point.SITUATION_BOTTOM_TO_TOP) {
-				grp.drawString(relationType2, top2.x + scrollX + 4, 
-					top2.y + scrollY - 16);
+				grp.drawString(relationType2, top2.x + 4, 
+					top2.y - 16);
 			} else {
-				grp.drawString(relationType2, right2.x + scrollX + 4, 
-					(top2.y * bar3 + bottom2.y * rab3) / 1000 + scrollY - 4);
+				grp.drawString(relationType2, right2.x + 4, 
+					(top2.y * bar3 + bottom2.y * rab3) / 1000 - 4);
 			}
 		}
 
