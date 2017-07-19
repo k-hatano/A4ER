@@ -215,6 +215,8 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 			int bar2 = 1000 - rab2;
 			int bar3 = 1000 - rab3;
 
+			int situation = Point.SITUATION_NONE;
+
 			if (entity1.physicalName.equals(entity2.physicalName)) {
 				grp.drawLine(right1.x + scrollX, (top1.y * bar1 + bottom1.y * rab1) / 1000 + scrollY, 
 					right1.x + 16 + scrollX, (top1.y * bar1 + bottom1.y * rab1) / 1000 + scrollY);
@@ -222,6 +224,7 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 					right1.x + 16 + scrollX, (top1.y * bar3 + bottom1.y * rab3) / 1000 + scrollY);
 				grp.drawLine(right2.x + 16 + scrollX, (top2.y * bar3 + bottom2.y * rab3) / 1000 + scrollY, 
 					right2.x + scrollX, (top2.y * bar3 + bottom2.y * rab3) / 1000 + scrollY);
+				situation = Point.SITUATION_SELF_TO_SELF;
 			} else if (minDist == left1.manhattanDistanceTo(right2, Point.SITUATION_LEFT_TO_RIGHT)) {
 				left1 = new Point(tmpPosition1.x , 
 					(tmpPosition1.y * bar1 + (tmpPosition1.y + entity1.tmpHeight) * rab1) / 1000);
@@ -234,6 +237,7 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 					(left1.x * bar2 + right2.x * rab2) / 1000 + scrollX, right2.y + scrollY);
 				grp.drawLine((left1.x * bar2 + right2.x * rab2) / 1000 + scrollX, right2.y + scrollY, 
 					right2.x + scrollX, right2.y + scrollY);
+				situation = Point.SITUATION_LEFT_TO_RIGHT;
 			} else if (minDist == top1.manhattanDistanceTo(bottom2, Point.SITUATION_TOP_TO_BOTTOM))  {
 				top1 = new Point((tmpPosition1.x * bar1 + (tmpPosition1.x + entity1.tmpWidth) * rab1) / 1000 ,
 					tmpPosition1.y);
@@ -246,6 +250,7 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 					bottom2.x + scrollX, (top1.y * bar2 + bottom2.y * rab2) / 1000 + scrollY);
 				grp.drawLine(bottom2.x + scrollX, (top1.y * bar2 + bottom2.y * rab2) / 1000 + scrollY, 
 					bottom2.x + scrollX, bottom2.y + scrollY);
+				situation = Point.SITUATION_TOP_TO_BOTTOM;
 			} else if (minDist == right1.manhattanDistanceTo(left2, Point.SITUATION_RIGHT_TO_LEFT))  {
 				right1 = new Point(tmpPosition1.x + entity1.tmpWidth ,
 					(tmpPosition1.y * bar1 + (tmpPosition1.y + entity1.tmpHeight) * rab1) / 1000);
@@ -258,6 +263,7 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 					(right1.x * bar2 +left2.x * rab2) / 1000 + scrollX, left2.y + scrollY);
 				grp.drawLine((right1.x * bar2 + left2.x * rab2) / 1000 + scrollX, left2.y + scrollY,
 					left2.x + scrollX, left2.y + scrollY);
+				situation = Point.SITUATION_RIGHT_TO_LEFT;
 			} else {
 				bottom1 = new Point((tmpPosition1.x * bar1 + (tmpPosition1.x + entity1.tmpWidth) * rab1) / 1000 , 
 					tmpPosition1.y + entity1.tmpHeight);
@@ -270,6 +276,67 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 					top2.x + scrollX, (bottom1.y * bar2 + top2.y * rab2) / 1000 + scrollY);
 				grp.drawLine(top2.x + scrollX, (bottom1.y * bar2 + top2.y * rab2) / 1000 + scrollY, 
 					top2.x + scrollX, top2.y + scrollY);
+				situation = Point.SITUATION_BOTTOM_TO_TOP;
+			}
+
+			String relationType1 = "";
+			if (relation.relationType1 == 1) {
+				relationType1 = "0...1";
+			} else if (relation.relationType1 == 2) {
+				relationType1 = "1";
+			} else if (relation.relationType1 == 3) {
+				relationType1 = "0...N";
+			} else if (relation.relationType1 == 4) {
+				relationType1 = "1...N";
+			} else if (relation.relationType1 == 5) {
+				relationType1 = "N";
+			}
+
+			if (situation == Point.SITUATION_LEFT_TO_RIGHT) {
+				grp.drawString(relationType1, left1.x + scrollX - 4 - metrics.getStringBounds(relationType1, grp).getBounds().width, 
+					left1.y + scrollY - 4);
+			} else if (situation == Point.SITUATION_TOP_TO_BOTTOM) {
+				grp.drawString(relationType1, top1.x + scrollX + 4, 
+					top1.y + scrollY - 16);
+			} else if (situation == Point.SITUATION_RIGHT_TO_LEFT) {
+				grp.drawString(relationType1, right1.x + scrollX + 4, 
+					right1.y + scrollY - 4);
+			} else if (situation == Point.SITUATION_BOTTOM_TO_TOP) {
+				grp.drawString(relationType1, bottom1.x + scrollX + 4, 
+					bottom1.y + scrollY + 16);
+			} else {
+				grp.drawString(relationType1, right1.x + scrollX + 4, 
+					(top1.y * bar1 + bottom1.y * rab1) / 1000 + scrollY - 4);
+			}
+
+			String relationType2 = "";
+			if (relation.relationType2 == 1) {
+				relationType2 = "0...1";
+			} else if (relation.relationType2 == 2) {
+				relationType2 = "1";
+			} else if (relation.relationType2 == 3) {
+				relationType2 = "0...N";
+			} else if (relation.relationType2 == 4) {
+				relationType2 = "1...N";
+			} else if (relation.relationType2 == 5) {
+				relationType2 = "N";
+			}
+
+			if (situation == Point.SITUATION_LEFT_TO_RIGHT) {
+				grp.drawString(relationType2, right2.x + scrollX + 4, 
+					right2.y + scrollY - 4);
+			} else if (situation == Point.SITUATION_TOP_TO_BOTTOM) {
+				grp.drawString(relationType2, bottom2.x + scrollX + 4, 
+					bottom2.y + scrollY + 16);
+			} else if (situation == Point.SITUATION_RIGHT_TO_LEFT) {
+				grp.drawString(relationType2, left2.x + scrollX - 4 - metrics.getStringBounds(relationType2, grp).getBounds().width, 
+					left2.y + scrollY - 4);
+			} else if (situation == Point.SITUATION_BOTTOM_TO_TOP) {
+				grp.drawString(relationType2, top2.x + scrollX + 4, 
+					top2.y + scrollY - 16);
+			} else {
+				grp.drawString(relationType2, right2.x + scrollX + 4, 
+					(top2.y * bar3 + bottom2.y * rab3) / 1000 + scrollY - 4);
 			}
 		}
 
@@ -352,14 +419,20 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 	@Override
 	public void mouseDragged(MouseEvent arg0) {
 		if (dragging) {
-			if (arg0.getButton() == MouseEvent.BUTTON2) {
+			if (arg0.getButton() == MouseEvent.BUTTON2 || arg0.isAltDown()) {
 				scrollX = originalX + (arg0.getX() - clickedX) * 2;
 				scrollY = originalY + (arg0.getY() - clickedY) * 2;
 			} else {
 				scrollX = originalX + (arg0.getX() - clickedX);
 				scrollY = originalY + (arg0.getY() - clickedY);
 			}
-			selectedIndex = 0;
+			if (arg0.isShiftDown()) {
+				if (Math.abs(arg0.getX() - clickedX) > Math.abs(arg0.getY() - clickedY)) {
+					scrollY = originalY;
+				} else {
+					scrollX = originalX;
+				}
+			}
 			repaint();
 		}
 	}

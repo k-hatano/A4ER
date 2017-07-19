@@ -164,6 +164,20 @@ public class A4ERImport {
 					relation.bar3 = Integer.parseInt(m13.group(1));
 					continue;
 				}
+
+				final Pattern p14 = Pattern.compile("^RelationType1=(\\d+)");
+				Matcher m14 = p14.matcher(str);
+				if (m14.find()) {
+					relation.relationType1 = Integer.parseInt(m14.group(1));
+					continue;
+				}
+
+				final Pattern p15 = Pattern.compile("^RelationType2=(\\d+)");
+				Matcher m15 = p15.matcher(str);
+				if (m15.find()) {
+					relation.relationType2 = Integer.parseInt(m15.group(1));
+					continue;
+				}
 				
 			}
 
