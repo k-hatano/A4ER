@@ -65,65 +65,65 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 		grp.fillRect(0, 0, w, h);
 
 		grp.setColor(Color.black);
-		for (Entity item : lEREntities) {
-			Position position = item.positionInPage(currentPage);
+		for (Entity entity : lEREntities) {
+			Position position = entity.positionInPage(currentPage);
 			if (position == null) {
 				continue;
 			}
 
-			grp.drawString(item.logicalName, 
+			grp.drawString(entity.logicalName, 
 				(int)(position.x / xRate + scrollX),
 				(int)(position.y / yRate - 2 + scrollY));
 
 			if (level == 1) {
-				int tableLogicalNameWidth = metrics.getStringBounds(item.logicalName, grp).getBounds().width;
+				int tableLogicalNameWidth = metrics.getStringBounds(entity.logicalName, grp).getBounds().width;
 
-				grp.drawString(item.physicalName, 
+				grp.drawString(entity.physicalName, 
 					(int)(position.x / xRate + tableLogicalNameWidth + 8 + scrollX),
 					(int)(position.y / yRate - 2 + scrollY));
 			}
 
-			if (item.physicalNameWidth == 0) {
+			if (entity.physicalNameWidth == 0) {
 				int physicalNameWidth = 0;
-				for (Field field : lERFields.get(item.physicalName)) {
-					physicalNameWidth = metrics.getStringBounds(field.key, grp).getBounds().width;
-					if (item.physicalNameWidth < physicalNameWidth) {
-						item.physicalNameWidth = physicalNameWidth;
+				for (Field field : lERFields.get(entity.physicalName)) {
+					physicalNameWidth = metrics.getStringBounds(field.physicalName, grp).getBounds().width;
+					if (entity.physicalNameWidth < physicalNameWidth) {
+						entity.physicalNameWidth = physicalNameWidth;
 					}
 				}
 			}
 
-			if (item.logicalNameWidth == 0) {
+			if (entity.logicalNameWidth == 0) {
 				int logicalNameWidth = 0;
-				for (Field field : lERFields.get(item.physicalName)) {
-					logicalNameWidth = metrics.getStringBounds(field.name, grp).getBounds().width;
-					if (item.logicalNameWidth < logicalNameWidth) {
-						item.logicalNameWidth = logicalNameWidth;
+				for (Field field : lERFields.get(entity.physicalName)) {
+					logicalNameWidth = metrics.getStringBounds(field.logicalName, grp).getBounds().width;
+					if (entity.logicalNameWidth < logicalNameWidth) {
+						entity.logicalNameWidth = logicalNameWidth;
 					}
 				}
 			}
 
-			if (item.typeWidth == 0) {
+			if (entity.typeWidth == 0) {
 				int typeWidth = 0;
-				for (Field field : lERFields.get(item.physicalName)) {
+				for (Field field : lERFields.get(entity.physicalName)) {
 					typeWidth = metrics.getStringBounds(field.type, grp).getBounds().width;
-					if (item.typeWidth < typeWidth) {
-						item.typeWidth = typeWidth;
+					if (entity.typeWidth < typeWidth) {
+						entity.typeWidth = typeWidth;
 					}
 				}
 			}
 
 			int left = (int)(position.x / xRate + scrollX - 2);
 			int top = (int)(position.y / yRate + scrollY);
-			int width = item.logicalNameWidth + 8;
-			int height = lERFields.get(item.physicalName).size() * 16 + 2;
+			int width = entity.logicalNameWidth + 8;
+			int height = lERFields.get(entity.physicalName).size() * 16 + 2;
 			if (level == 1) {
-				width += item.physicalNameWidth;
+				width += entity.physicalNameWidth;
 			} else if (level == 2) {
-				width += item.typeWidth;
+				width += entity.typeWidth;
 			}
-			item.tmpWidth = width;
-			item.tmpHeight = height;
+			entity.tmpWidth = width;
+			entity.tmpHeight = height;
 
 			grp.setColor(Color.white);
 			grp.fillRect(left, top, width, height);
@@ -139,8 +139,8 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 			}
 		}
 
-		for (String key : lERFields.keySet()) {
-			Entity entity = Entity.entityNamed(lEREntities, key);
+		for (String physicalName : lERFields.keySet()) {
+			Entity entity = Entity.entityNamed(lEREntities, physicalName);
 			if (entity == null) {
 				continue;
 			}
@@ -149,16 +149,16 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 				continue;
 			}
 
-			ArrayList<Field> fields = lERFields.get(key);
+			ArrayList<Field> fields = lERFields.get(physicalName);
 			int x = (int)(position.x / xRate + scrollX);
 			int y = (int)(position.y / yRate + scrollY);
-			for (Field item : fields) {
+			for (Field field : fields) {
 				y += 16;
-				grp.drawString(item.name, x, y);
+				grp.drawString(field.logicalName, x, y);
 				if (level == 1) {
-					grp.drawString(item.key, x + entity.logicalNameWidth + 4, y);
+					grp.drawString(field.physicalName, x + entity.logicalNameWidth + 4, y);
 				} else if (level == 2) {
-					grp.drawString(item.type, x + entity.logicalNameWidth + 4, y);
+					grp.drawString(field.type, x + entity.logicalNameWidth + 4, y);
 				}
 			}
 		}
@@ -539,9 +539,9 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 			entities[selectedIndex]);
 		
 		if (result != null && result.length() > 0) {
-			for (Entity item : lEREntities) {
-				if (item.logicalName.equals(result)) {
-					Position position = item.positions.get(0);
+			for (Entity entity : lEREntities) {
+				if (entity.logicalName.equals(result)) {
+					Position position = entity.positions.get(0);
 					parent.cbPage.setSelectedItem(position.page);
 					scrollX = (int)(-position.x / xRate + 64);
 					scrollY = (int)(-position.y / yRate + 64);
