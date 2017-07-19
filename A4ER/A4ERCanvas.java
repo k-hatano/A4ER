@@ -14,6 +14,7 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 	HashMap<String, ArrayList<Field>> lERFields = new HashMap<String, ArrayList<Field>>();
 	ArrayList<Relation> lERReleations = new ArrayList<Relation>();
 	ArrayList<String> lPages = new ArrayList<String>();
+	ArrayList<Comment> lComments = new ArrayList<Comment>();
 
 	int originalX, originalY;
 	int scrollX, scrollY;
@@ -335,6 +336,17 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 			} else {
 				grp.drawString(relationType2, right2.x + 4, 
 					(top2.y * bar3 + bottom2.y * rab3) / 1000 - 4);
+			}
+		}
+
+		for (Comment comment : lComments) {
+			if (currentPage.equals(comment.page)) {
+				int left = (int)(comment.left / xRate + scrollX);
+				int top = (int)(comment.top / yRate + scrollY);
+				int width = (int)(comment.width / xRate);
+				int height = (int)(comment.height / yRate);
+				grp.drawRect(left, top, width, height);
+				grp.drawString(comment.comment, left + 8, top + 16);
 			}
 		}
 

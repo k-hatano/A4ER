@@ -17,6 +17,7 @@ public class A4ERImport {
 			canvas.lERFields = new HashMap<String, ArrayList<Field>>();
 			canvas.lERReleations = new ArrayList<Relation>();
 			canvas.lPages = new ArrayList<String>();
+			canvas.lComments = new ArrayList<Comment>();
 
 			ArrayList<String> list = new ArrayList<String>();
 			BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file),"UTF-8"));
@@ -31,6 +32,7 @@ public class A4ERImport {
 			ArrayList<Field> fields = new ArrayList<Field>();
 			Field field = new Field();
 			Relation relation = new Relation();
+			Comment comment = new Comment();
 			int level = 0;
 
 			Collections.reverse(list);
@@ -85,6 +87,7 @@ public class A4ERImport {
 					fields = new ArrayList<Field>();
 					field = new Field();
 					relation = new Relation();
+					comment = new Comment();
 					continue;
 				}
 
@@ -110,6 +113,7 @@ public class A4ERImport {
 					fields = new ArrayList<Field>();
 					field = new Field();
 					relation = new Relation();
+					comment = new Comment();
 					continue;
 				}
 
@@ -174,10 +178,57 @@ public class A4ERImport {
 					continue;
 				}
 
-				final Pattern p15 = Pattern.compile("^RelationType2=(\\d+)");
+				final Pattern p15 = Pattern.compile("^Left=(\\d+)");
 				Matcher m15 = p15.matcher(str);
 				if (m15.find()) {
-					relation.relationType2 = Integer.parseInt(m15.group(1));
+					comment.left = Integer.parseInt(m15.group(1));
+					continue;
+				}
+
+				final Pattern p16 = Pattern.compile("^Top=(\\d+)");
+				Matcher m16 = p16.matcher(str);
+				if (m16.find()) {
+					comment.top = Integer.parseInt(m16.group(1));
+					continue;
+				}
+
+				final Pattern p17 = Pattern.compile("^Width=(\\d+)");
+				Matcher m17 = p17.matcher(str);
+				if (m17.find()) {
+					comment.width = Integer.parseInt(m17.group(1));
+					continue;
+				}
+
+				final Pattern p18 = Pattern.compile("^Height=(\\d+)");
+				Matcher m18 = p18.matcher(str);
+				if (m18.find()) {
+					comment.height = Integer.parseInt(m18.group(1));
+					continue;
+				}
+
+				final Pattern p19 = Pattern.compile("^Page=(.+)");
+				Matcher m19 = p19.matcher(str);
+				if (m19.find()) {
+					comment.page = m19.group(1);
+					continue;
+				}
+
+				final Pattern p20 = Pattern.compile("^Comment=(.+)");
+				Matcher m20 = p20.matcher(str);
+				if (m20.find()) {
+					comment.comment = m20.group(1);
+					continue;
+				}
+
+				final Pattern p21 = Pattern.compile("^\\[Comment\\]");
+				Matcher m21 = p21.matcher(str);
+				if (m21.find()) {
+					canvas.lComments.add(0, comment);
+					entity = new Entity();
+					fields = new ArrayList<Field>();
+					field = new Field();
+					relation = new Relation();
+					comment = new Comment();
 					continue;
 				}
 				
