@@ -37,14 +37,16 @@ public class A4ERImport {
 
 			Collections.reverse(list);
 			for (String str : list) {
+				Matcher matcher;
+
 				final Pattern p1 = Pattern.compile("^Position=\\\"(.*)\\\",(\\d+),(\\d+)");
-				Matcher m1 = p1.matcher(str);
-				if (m1.find()) {
-					String page = m1.group(1).toUpperCase();
+				matcher = p1.matcher(str);
+				if (matcher.find()) {
+					String page = matcher.group(1).toUpperCase();
 
 					Position position = new Position();
-					position.x = Integer.parseInt(m1.group(2));
-					position.y = Integer.parseInt(m1.group(3));
+					position.x = Integer.parseInt(matcher.group(2));
+					position.y = Integer.parseInt(matcher.group(3));
 					position.page = page;
 					entity.positions.add(position);
 
@@ -52,35 +54,35 @@ public class A4ERImport {
 				}
 
 				final Pattern p2 = Pattern.compile("^Field=\\\"(.*?)\\\",\\\"(.*?)\\\",\\\"(.*?)\\\",(.*?),(.*?)");
-				Matcher m2 = p2.matcher(str);
-				if (m2.find()) {
-					field.logicalName = m2.group(1);
-					field.physicalName = m2.group(2);
-					field.type = m2.group(3);
-					field.notNull = m2.group(4);
-					field.key = m2.group(5);
+				matcher = p2.matcher(str);
+				if (matcher.find()) {
+					field.logicalName = matcher.group(1);
+					field.physicalName = matcher.group(2);
+					field.type = matcher.group(3);
+					field.notNull = matcher.group(4);
+					field.key = matcher.group(5);
 					fields.add(0, field);
 					field = new Field();
 					continue;
 				}
 
 				final Pattern p3 = Pattern.compile("^PName=(.+)");
-				Matcher m3 = p3.matcher(str);
-				if (m3.find()) {
-					entity.physicalName = m3.group(1);
+				matcher = p3.matcher(str);
+				if (matcher.find()) {
+					entity.physicalName = matcher.group(1);
 					continue;
 				}
 
 				final Pattern p4 = Pattern.compile("^LName=(.+)");
-				Matcher m4 = p4.matcher(str);
-				if (m4.find()) {
-					entity.logicalName = m4.group(1);
+				matcher = p4.matcher(str);
+				if (matcher.find()) {
+					entity.logicalName = matcher.group(1);
 					continue;
 				}
 
 				final Pattern p5 = Pattern.compile("^\\[Entity\\]");
-				Matcher m5 = p5.matcher(str);
-				if (m5.find()) {
+				matcher = p5.matcher(str);
+				if (matcher.find()) {
 					canvas.lEREntities.add(0, entity);
 					canvas.lERFields.put(entity.physicalName ,fields);
 					entity = new Entity();
@@ -92,22 +94,22 @@ public class A4ERImport {
 				}
 
 				final Pattern p6 = Pattern.compile("^Entity1=(.+)");
-				Matcher m6 = p6.matcher(str);
-				if (m6.find()) {
-					relation.entity1 = m6.group(1);
+				matcher = p6.matcher(str);
+				if (matcher.find()) {
+					relation.entity1 = matcher.group(1);
 					continue;
 				}
 
 				final Pattern p7 = Pattern.compile("^Entity2=(.+)");
-				Matcher m7 = p7.matcher(str);
-				if (m7.find()) {
-					relation.entity2 = m7.group(1);
+				matcher = p7.matcher(str);
+				if (matcher.find()) {
+					relation.entity2 = matcher.group(1);
 					continue;
 				}
 
 				final Pattern p8 = Pattern.compile("^\\[Relation\\]");
-				Matcher m8 = p8.matcher(str);
-				if (m8.find()) {
+				matcher = p8.matcher(str);
+				if (matcher.find()) {
 					canvas.lERReleations.add(0, relation);
 					entity = new Entity();
 					fields = new ArrayList<Field>();
@@ -118,9 +120,9 @@ public class A4ERImport {
 				}
 
 				final Pattern p9 = Pattern.compile("^ViewMode=(\\d+)");
-				Matcher m9 = p9.matcher(str);
-				if (m9.find()) {
-					int tmpLevel = Integer.parseInt(m9.group(1));
+				matcher = p9.matcher(str);
+				if (matcher.find()) {
+					int tmpLevel = Integer.parseInt(matcher.group(1));
 					switch (tmpLevel) {
 						case 0:
 						case 1:
@@ -144,85 +146,92 @@ public class A4ERImport {
 				}
 
 				final Pattern p10 = Pattern.compile("^PageInfo=\"([^\"]*)\"");
-				Matcher m10 = p10.matcher(str);
-				if (m10.find()) {
-					canvas.lPages.add(0, m10.group(1).toUpperCase());
+				matcher = p10.matcher(str);
+				if (matcher.find()) {
+					canvas.lPages.add(0, matcher.group(1).toUpperCase());
 					continue;
 				}
 
 				final Pattern p11 = Pattern.compile("^Bar1=(\\d+)");
-				Matcher m11 = p11.matcher(str);
-				if (m11.find()) {
-					relation.bar1 = Integer.parseInt(m11.group(1));
+				matcher = p11.matcher(str);
+				if (matcher.find()) {
+					relation.bar1 = Integer.parseInt(matcher.group(1));
 					continue;
 				}
 
 				final Pattern p12 = Pattern.compile("^Bar2=(\\d+)");
-				Matcher m12 = p12.matcher(str);
-				if (m12.find()) {
-					relation.bar2 = Integer.parseInt(m12.group(1));
+				matcher = p12.matcher(str);
+				if (matcher.find()) {
+					relation.bar2 = Integer.parseInt(matcher.group(1));
 					continue;
 				}
 
 				final Pattern p13 = Pattern.compile("^Bar3=(\\d+)");
-				Matcher m13 = p13.matcher(str);
-				if (m13.find()) {
-					relation.bar3 = Integer.parseInt(m13.group(1));
+				matcher = p13.matcher(str);
+				if (matcher.find()) {
+					relation.bar3 = Integer.parseInt(matcher.group(1));
 					continue;
 				}
 
 				final Pattern p14 = Pattern.compile("^RelationType1=(\\d+)");
-				Matcher m14 = p14.matcher(str);
-				if (m14.find()) {
-					relation.relationType1 = Integer.parseInt(m14.group(1));
+				matcher = p14.matcher(str);
+				if (matcher.find()) {
+					relation.relationType1 = Integer.parseInt(matcher.group(1));
 					continue;
 				}
 
-				final Pattern p15 = Pattern.compile("^Left=(\\d+)");
-				Matcher m15 = p15.matcher(str);
-				if (m15.find()) {
-					comment.left = Integer.parseInt(m15.group(1));
+				final Pattern p15 = Pattern.compile("^RelationType2=(\\d+)");
+				matcher = p15.matcher(str);
+				if (matcher.find()) {
+					relation.relationType2 = Integer.parseInt(matcher.group(1));
 					continue;
 				}
 
-				final Pattern p16 = Pattern.compile("^Top=(\\d+)");
-				Matcher m16 = p16.matcher(str);
-				if (m16.find()) {
-					comment.top = Integer.parseInt(m16.group(1));
+				final Pattern p16 = Pattern.compile("^Left=(\\d+)");
+				matcher = p16.matcher(str);
+				if (matcher.find()) {
+					comment.left = Integer.parseInt(matcher.group(1));
 					continue;
 				}
 
-				final Pattern p17 = Pattern.compile("^Width=(\\d+)");
-				Matcher m17 = p17.matcher(str);
-				if (m17.find()) {
-					comment.width = Integer.parseInt(m17.group(1));
+				final Pattern p17 = Pattern.compile("^Top=(\\d+)");
+				matcher = p17.matcher(str);
+				if (matcher.find()) {
+					comment.top = Integer.parseInt(matcher.group(1));
 					continue;
 				}
 
-				final Pattern p18 = Pattern.compile("^Height=(\\d+)");
-				Matcher m18 = p18.matcher(str);
-				if (m18.find()) {
-					comment.height = Integer.parseInt(m18.group(1));
+				final Pattern p18 = Pattern.compile("^Width=(\\d+)");
+				matcher = p18.matcher(str);
+				if (matcher.find()) {
+					comment.width = Integer.parseInt(matcher.group(1));
 					continue;
 				}
 
-				final Pattern p19 = Pattern.compile("^Page=(.+)");
-				Matcher m19 = p19.matcher(str);
-				if (m19.find()) {
-					comment.page = m19.group(1);
+				final Pattern p19 = Pattern.compile("^Height=(\\d+)");
+				matcher = p19.matcher(str);
+				if (matcher.find()) {
+					comment.height = Integer.parseInt(matcher.group(1));
 					continue;
 				}
 
-				final Pattern p20 = Pattern.compile("^Comment=(.+)");
-				Matcher m20 = p20.matcher(str);
-				if (m20.find()) {
-					comment.comment = m20.group(1);
+				final Pattern p20 = Pattern.compile("^Page=(.+)");
+				matcher = p20.matcher(str);
+				if (matcher.find()) {
+					comment.page = matcher.group(1);
 					continue;
 				}
 
-				final Pattern p21 = Pattern.compile("^\\[Comment\\]");
-				Matcher m21 = p21.matcher(str);
-				if (m21.find()) {
+				final Pattern p21 = Pattern.compile("^Comment=(.+)");
+				matcher = p21.matcher(str);
+				if (matcher.find()) {
+					comment.comment = matcher.group(1);
+					continue;
+				}
+
+				final Pattern p22 = Pattern.compile("^\\[Comment\\]");
+				matcher = p22.matcher(str);
+				if (matcher.find()) {
 					canvas.lComments.add(0, comment);
 					entity = new Entity();
 					fields = new ArrayList<Field>();
