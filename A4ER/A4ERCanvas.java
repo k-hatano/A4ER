@@ -32,6 +32,11 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 
 	File lastFile = null;
 
+	String searchingString = null;
+	int foundX = -1;
+	int foundY = -1;
+	boolean showSearchResultFlag = false;
+
 	public A4ERCanvas(A4ER a4er) {
 		parent = a4er;
 		addMouseListener(this);
@@ -45,6 +50,9 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 		int h = this.getHeight();
 		maxWidth = 0;
 		maxHeight = 0;
+
+		foundX = -1;
+		foundY = -1;
 
 		int level = parent.cbLevel.getSelectedIndex();
 
@@ -72,6 +80,15 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 				continue;
 			}
 
+			if (searchingString != null && entity.logicalName.indexOf(searchingString) >= 0) {
+				grp.setColor(Color.red);
+				if (foundX == -1 && foundY == -1) {
+					foundX = (int)(position.x / xRate + scrollX);
+					foundY = (int)(position.y / yRate - 2 + scrollY);
+				}
+			} else {
+				grp.setColor(Color.black);
+			}
 			grp.drawString(entity.logicalName, 
 				(int)(position.x / xRate + scrollX),
 				(int)(position.y / yRate - 2 + scrollY));
@@ -79,6 +96,15 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 			if (level == 1) {
 				int tableLogicalNameWidth = metrics.getStringBounds(entity.logicalName, grp).getBounds().width;
 
+				if (searchingString != null && entity.physicalName.indexOf(searchingString) >= 0) {
+					grp.setColor(Color.red);
+					if (foundX == -1 && foundY == -1) {
+						foundX = (int)(position.x / xRate + tableLogicalNameWidth + 8 + scrollX);
+						foundY = (int)(position.y / yRate - 2 + scrollY);
+					}
+				} else {
+					grp.setColor(Color.black);
+				}
 				grp.drawString(entity.physicalName, 
 					(int)(position.x / xRate + tableLogicalNameWidth + 8 + scrollX),
 					(int)(position.y / yRate - 2 + scrollY));
@@ -157,13 +183,32 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 			int y = (int)(position.y / yRate + scrollY);
 			for (Field field : fields) {
 				y += 16;
+				if (searchingString != null && field.logicalName.indexOf(searchingString) >= 0) {
+					grp.setColor(Color.red);
+					if (foundX == -1 && foundY == -1) {
+						foundX = (int)(position.x / xRate + scrollX);
+						foundY = (int)(position.y / yRate + scrollY);
+					}
+				} else {
+					grp.setColor(Color.black);
+				}
 				grp.drawString(field.logicalName, x, y);
 				if (level == 1) {
+					if (searchingString != null && field.physicalName.indexOf(searchingString) >= 0) {
+						if (foundX == -1 && foundY == -1) {
+							foundX = (int)(position.x / xRate + scrollX);
+							foundY = (int)(position.y / yRate + scrollY);
+						}
+						grp.setColor(Color.red);
+					} else {
+						grp.setColor(Color.black);
+					}
 					grp.drawString(field.physicalName, x + entity.logicalNameWidth + 4, y);
 				} else if (level == 2) {
 					grp.drawString(field.type, x + entity.logicalNameWidth + 4, y);
 				}
 
+				grp.setColor(Color.black);
 				if (field.notNull != null && field.notNull.length() > 0) {
 					grp.drawRect(x - 4, y - 7, 2, 4);
 				}
@@ -215,6 +260,8 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 			int bar3 = 1000 - rab3;
 
 			int situation = Point.SITUATION_NONE;
+
+			grp.setColor(Color.black);
 
 			if (entity1.physicalName.equals(entity2.physicalName)) {
 				grp.drawLine(right1.x, (top1.y * bar1 + bottom1.y * rab1) / 1000, 
@@ -346,6 +393,15 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 				int width = (int)(comment.width / xRate);
 				int height = (int)(comment.height / yRate);
 				grp.drawRect(left, top, width, height);
+				if (searchingString != null && comment.comment.indexOf(searchingString) >= 0) {
+					grp.setColor(Color.red);
+					if (foundX == -1 && foundY == -1) {
+						foundX = (int)(left + 8);
+						foundY = (int)(top + 16);
+					}
+				} else {
+					grp.setColor(Color.black);
+				}
 				grp.drawString(comment.comment, left + 8, top + 16);
 			}
 		}
@@ -358,6 +414,13 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 		}
 
 		g.drawImage(img, 0, 0, this);
+
+		if (showSearchResultFlag && foundX != -1 && foundY != -1) {
+			scrollX = - foundX + scrollX + 64;
+			scrollY = - foundY + scrollY + 64;
+			showSearchResultFlag = false;
+			repaint(); // あんまりよくない
+		}
 	}
 
 	public void showImportFileDialog() {
@@ -561,6 +624,28 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 				}
 			}
 		}
+
+		return 0;
+	}
+
+
+	public int searchStringAndShowItInRed() {
+		if (searchingString == null) {
+			searchingString = "";
+		}
+		searchingString = JOptionPane.showInputDialog("Input string to search...", searchingString);
+		if (searchingString != null && searchingString.equals("")) {
+			searchingString = null;
+		}
+		showSearchResultFlag = true;
+		repaint();
+
+		return 0;
+	}
+
+	public int cancelSearching() {
+		searchingString = null;
+		repaint();
 
 		return 0;
 	}

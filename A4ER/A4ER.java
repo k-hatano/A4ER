@@ -11,9 +11,9 @@ public class A4ER extends JFrame implements ActionListener {
 	JMenuBar mbMenuBar;
 	JMenu mFile,mEdit,mERDiagram;
 	JMenuItem miOpen,miQuit;
+	JMenuItem miEntitiesList,miSearchString,miCancelSearching;
 	JCheckBoxMenuItem miAntialiasing;
 	JComboBox cbPage, cbLevel;
-	JMenuItem miEntitiesList;
 	A4ERCanvas a4erCanvas;
 	
 	A4ER() {
@@ -42,6 +42,14 @@ public class A4ER extends JFrame implements ActionListener {
 		miEntitiesList = new JMenuItem("Entities List...");
 		miEntitiesList.addActionListener(this);
 		mEdit.add(miEntitiesList);
+		mEdit.addSeparator();
+		miSearchString = new JMenuItem("Search String and Show It In Red...");
+		miSearchString.setAccelerator(KeyStroke.getKeyStroke('F',KeyEvent.CTRL_MASK));
+		miSearchString.addActionListener(this);
+		mEdit.add(miSearchString);
+		miCancelSearching = new JMenuItem("Cancel Searching");
+		miCancelSearching.addActionListener(this);
+		mEdit.add(miCancelSearching);
 		mbMenuBar.add(mEdit);
 
 		mERDiagram = new JMenu("ER Diagram");
@@ -97,6 +105,10 @@ public class A4ER extends JFrame implements ActionListener {
 			a4erCanvas.showImportFileDialog();
 		} else if (arg0.getSource() == miEntitiesList) {
 			a4erCanvas.showEntitiesList();
+		} else if (arg0.getSource() == miSearchString) {
+			a4erCanvas.searchStringAndShowItInRed();
+		} else if (arg0.getSource() == miCancelSearching) {
+			a4erCanvas.cancelSearching();
 		} else if (arg0.getSource() == miAntialiasing) {
 			a4erCanvas.repaint();
 		}
