@@ -181,8 +181,15 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 			ArrayList<Field> fields = lERFields.get(physicalName);
 			int x = (int)(position.x / xRate + scrollX);
 			int y = (int)(position.y / yRate + scrollY);
+			int keys = 0;
 			for (Field field : fields) {
-				y += 16;
+				// キー値
+				if (field.key == null || field.key.length() == 0) {
+					continue;
+				}
+				y+=16;
+				keys++;
+
 				if (searchingString != null && field.logicalName.indexOf(searchingString) >= 0) {
 					grp.setColor(Color.red);
 					if (foundX == -1 && foundY == -1) {
@@ -212,6 +219,47 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 				if (field.notNull != null && field.notNull.length() > 0) {
 					grp.drawRect(x - 4, y - 7, 2, 4);
 				}
+			}
+			for (Field field : fields) {
+				// 非キー値
+				if (field.key != null && field.key.length() > 0) {
+					continue;
+				}
+				y+=16;
+
+				if (searchingString != null && field.logicalName.indexOf(searchingString) >= 0) {
+					grp.setColor(Color.red);
+					if (foundX == -1 && foundY == -1) {
+						foundX = (int)(position.x / xRate + scrollX);
+						foundY = (int)(position.y / yRate + scrollY);
+					}
+				} else {
+					grp.setColor(Color.black);
+				}
+				grp.drawString(field.logicalName, x, y);
+				if (level == 1) {
+					if (searchingString != null && field.physicalName.indexOf(searchingString) >= 0) {
+						if (foundX == -1 && foundY == -1) {
+							foundX = (int)(position.x / xRate + scrollX);
+							foundY = (int)(position.y / yRate + scrollY);
+						}
+						grp.setColor(Color.red);
+					} else {
+						grp.setColor(Color.black);
+					}
+					grp.drawString(field.physicalName, x + entity.logicalNameWidth + 4, y);
+				} else if (level == 2) {
+					grp.drawString(field.type, x + entity.logicalNameWidth + 4, y);
+				}
+
+				grp.setColor(Color.black);
+				if (field.notNull != null && field.notNull.length() > 0) {
+					grp.drawRect(x - 4, y - 7, 2, 4);
+				}
+			}
+			if (keys > 0) {
+				grp.setColor(Color.black);
+				grp.drawLine(entity.tmpLeft + 2, entity.tmpTop + 16 * keys + 2, entity.tmpLeft + entity.tmpWidth - 3, entity.tmpTop + 16 * keys + 2);
 			}
 		}
 
