@@ -73,6 +73,22 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 		grp.setColor(Color.white);
 		grp.fillRect(0, 0, w, h);
 
+		if (parent.miGrid.getState()) {
+			int gridX = scrollX % 64;
+			grp.setColor(new Color(224, 224, 224));
+			while (gridX < this.getWidth()) {
+				grp.drawLine(gridX, 0, gridX, this.getHeight());
+				gridX += 64;
+			}
+
+			int gridY = scrollY % 64;
+			grp.setColor(new Color(224, 224, 224));
+			while (gridY < this.getHeight()) {
+				grp.drawLine(0, gridY, this.getWidth(), gridY);
+				gridY += 64;
+			}
+		}
+
 		grp.setColor(Color.black);
 		for (Entity entity : lEREntities) {
 			Position position = entity.positionInPage(currentPage);

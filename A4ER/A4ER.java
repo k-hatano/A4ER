@@ -12,7 +12,7 @@ public class A4ER extends JFrame implements ActionListener {
 	JMenu mFile,mEdit,mERDiagram;
 	JMenuItem miOpen,miQuit;
 	JMenuItem miEntitiesList,miSearchString,miCancelSearching;
-	JCheckBoxMenuItem miAntialiasing;
+	JCheckBoxMenuItem miAntialiasing,miGrid;
 	JComboBox cbPage, cbLevel;
 	A4ERCanvas a4erCanvas;
 	
@@ -56,6 +56,9 @@ public class A4ER extends JFrame implements ActionListener {
 		miAntialiasing = new JCheckBoxMenuItem("Antialiasing");
 		miAntialiasing.addActionListener(this);
 		mERDiagram.add(miAntialiasing);
+		miGrid = new JCheckBoxMenuItem("Grid");
+		miGrid.addActionListener(this);
+		mERDiagram.add(miGrid);
 		mbMenuBar.add(mERDiagram);
 
 		setJMenuBar(mbMenuBar);
@@ -109,7 +112,7 @@ public class A4ER extends JFrame implements ActionListener {
 			a4erCanvas.searchStringAndShowItInRed();
 		} else if (arg0.getSource() == miCancelSearching) {
 			a4erCanvas.cancelSearching();
-		} else if (arg0.getSource() == miAntialiasing) {
+		} else if (arg0.getSource() == miAntialiasing || arg0.getSource() == miGrid) {
 			a4erCanvas.repaint();
 		}
 	}
