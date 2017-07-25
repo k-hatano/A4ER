@@ -61,6 +61,9 @@ public class A4ERImport {
 					field.type = matcher.group(3);
 					field.notNull = matcher.group(4);
 					field.key = matcher.group(5);
+					if (field.key != null && field.key.length() > 0) {
+						entity.keys++;
+					}
 					fields.add(0, field);
 					field = new Field();
 					continue;
@@ -126,20 +129,24 @@ public class A4ERImport {
 					switch (tmpLevel) {
 						case 0:
 						case 1:
-						case 2:
 						level = 0;
+						break;
+						case 2:
+						level = 1;
 						break;
 						case 3:
 						case 4:
-						case 6:
 						level = 2;
 						break;
 						case 5:
+						level = 3;
+						break;
+						case 6:
 						case 7:
-						level = 1;
+						level = 4;
 						break;
 						default:
-						level = 0;
+						level = 2;
 						break;
 					}
 					continue;

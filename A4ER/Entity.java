@@ -8,6 +8,7 @@ public class Entity {
 	public int physicalNameWidth;
 	public int logicalNameWidth;
 	public int typeWidth;
+	public int keys;
 
 	public int tmpLeft;
 	public int tmpTop;
@@ -19,6 +20,7 @@ public class Entity {
 		positions = new ArrayList<Position>();
 		physicalName = "";
 		logicalName = "";
+		keys = 0;
 	}
 
 	public static Entity entityNamed(ArrayList<Entity> entities,String entityName) {

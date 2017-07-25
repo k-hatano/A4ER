@@ -11,7 +11,7 @@ public class A4ER extends JFrame implements ActionListener {
 	JMenuBar mbMenuBar;
 	JMenu mFile,mEdit,mERDiagram;
 	JMenuItem miOpen,miQuit;
-	JMenuItem miEntitiesList,miSearchString,miCancelSearching;
+	JMenuItem miEntitiesList,miSearchString,miCancelSearching,miCopyPage;
 	JCheckBoxMenuItem miAntialiasing,miGrid;
 	JComboBox cbPage, cbLevel;
 	A4ERCanvas a4erCanvas;
@@ -39,6 +39,10 @@ public class A4ER extends JFrame implements ActionListener {
 
 
 		mEdit = new JMenu("Edit");
+		miCopyPage = new JMenuItem("Copy Page as Image");
+		miCopyPage.setAccelerator(KeyStroke.getKeyStroke('C',KeyEvent.CTRL_MASK | KeyEvent.ALT_MASK));
+		miCopyPage.addActionListener(this);
+		mEdit.add(miCopyPage);
 		miEntitiesList = new JMenuItem("Entities List...");
 		miEntitiesList.addActionListener(this);
 		mEdit.add(miEntitiesList);
@@ -76,9 +80,11 @@ public class A4ER extends JFrame implements ActionListener {
 		cbLevel = new JComboBox();
 		cbLevel.addActionListener(e -> a4erCanvas.repaint());
 		pHeaderPanel.add("East", cbLevel);
+		cbLevel.addItem("Keys");
 		cbLevel.addItem("Attributes");
-		cbLevel.addItem("Attributes & Physical Names");
 		cbLevel.addItem("Attributes & Types");
+		cbLevel.addItem("Attributes (Physical & Logical Names)");
+		cbLevel.addItem("Attributes (Physical & Logical Names) & Types");
 
 		add("North", pHeaderPanel);
 
@@ -114,6 +120,8 @@ public class A4ER extends JFrame implements ActionListener {
 			a4erCanvas.cancelSearching();
 		} else if (arg0.getSource() == miAntialiasing || arg0.getSource() == miGrid) {
 			a4erCanvas.repaint();
+		} else if (arg0.getSource() == miCopyPage) {
+			a4erCanvas.copyPageAsImage();
 		}
 	}
 
