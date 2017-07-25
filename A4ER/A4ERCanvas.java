@@ -573,6 +573,10 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 
 	@Override
 	public void mouseClicked(MouseEvent arg0) {
+		if (arg0.getButton() == MouseEvent.BUTTON3) {
+			this.parent.mPopupMenu.show(arg0.getComponent(), arg0.getX(), arg0.getY());
+			return;
+		}
 		if (System.currentTimeMillis() - lastClickedTime < 1000) {
 			if (scrollX > 0) {
 				scrollX = 0;
@@ -798,6 +802,8 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 
 	public void copyPageAsImage() {
 		drawForCopying = true;
+		int originalScrollX = scrollX;
+		int originalScrollY = scrollY;
 		scrollX = 0;
 		scrollY = 0;
 		repaint();
@@ -816,6 +822,10 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 
 			ImageSelection imageSelection = new ImageSelection(imgForCopying);
 			clip.setContents(imageSelection, imageSelection);
+
+			scrollX = originalScrollX;
+			scrollY = originalScrollY;
+			repaint();
 		});
 		copyThread.start();
 	}
