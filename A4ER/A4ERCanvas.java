@@ -51,6 +51,8 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 	public void paint(final Graphics g){
 		int w = this.getWidth();
 		int h = this.getHeight();
+		int minX = w;
+		int minY = h;
 		maxWidth = 0;
 		maxHeight = 0;
 
@@ -188,12 +190,20 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 			grp.setColor(Color.black);
 			grp.drawRect(left, top, width, height);
 
-			if (maxWidth < left + width) {
-				maxWidth = left + width;
+			if (minX > position.x) {
+				minX = position.x;
 			}
 
-			if (maxHeight < top + height) {
-				maxHeight = top + height;
+			if (minY > position.y) {
+				minY = position.y;
+			}
+
+			if (maxWidth < left + width - scrollX) {
+				maxWidth = left + width - scrollX;
+			}
+
+			if (maxHeight < top + height - scrollY) {
+				maxHeight = top + height - scrollY;
 			}
 		}
 
@@ -494,12 +504,28 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 					grp.setColor(Color.black);
 				}
 				grp.drawString(comment.comment, left + 8, top + 16);
+
+				if (minX > comment.left) {
+					minX = comment.left;
+				}
+
+				if (minY > comment.top) {
+					minY = comment.top;
+				}
 			}
+		}
+
+		maxWidth += minX;
+		maxHeight += minY;
+
+		if (parent.miGrid.getState()) {
+			grp.setColor(new Color(128, 128, 128));
+			grp.drawRect(scrollX, scrollY, maxWidth, maxHeight);
 		}
 
 		if (dragging) {
 			grp.setColor(Color.red);
-			grp.drawRect(scrollX, scrollY, maxWidth - scrollX, maxHeight - scrollY);
+			grp.drawRect(scrollX, scrollY, maxWidth, maxHeight);
 
 			grp.drawString("" + (-scrollX) + "," + (-scrollY), 2, 16);
 		}
@@ -539,15 +565,13 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 		if (System.currentTimeMillis() - lastClickedTime < 1000) {
 			if (scrollX > 0) {
 				scrollX = 0;
+			} else if (scrollX < -(maxWidth - this.getWidth())) {
+				scrollX = -(int)(maxWidth - this.getWidth());
 			}
 			if (scrollY > 0) {
 				scrollY = 0;
-			}
-			if (scrollX < -(this.getWidth() + maxWidth / xRate)) {
-				scrollX = -(int)(this.getWidth() + maxWidth / xRate);
-			}
-			if (scrollY < -(this.getHeight() + maxHeight / yRate)) {
-				scrollY = -(int)(this.getHeight() + maxHeight / yRate);
+			} else if (scrollY < -(maxHeight - this.getHeight())) {
+				scrollY = -(int)(maxHeight - this.getHeight());
 			}
 			repaint();
 		}
@@ -660,8 +684,8 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 			repaint();
 			break;
 			case KeyEvent.VK_END :
-			scrollX = -(int)(this.getWidth() + maxWidth / xRate);
-			scrollY = -(int)(this.getHeight() + maxHeight / yRate);
+			scrollX = -(int)(maxWidth - this.getWidth());
+			scrollY = -(int)(maxHeight - this.getHeight());
 			repaint();
 			break;
 			default:
