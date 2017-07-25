@@ -17,7 +17,7 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 	ArrayList<String> lPages = new ArrayList<String>();
 	ArrayList<Comment> lComments = new ArrayList<Comment>();
 
-	Image img = null;
+	Image imgForCopying = null;
 
 	int originalX, originalY;
 	int scrollX, scrollY;
@@ -39,6 +39,7 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 	int foundX = -1;
 	int foundY = -1;
 	boolean showSearchResultFlag = false;
+	boolean drawForCopying = false;
 
 	public A4ERCanvas(A4ER a4er) {
 		parent = a4er;
@@ -53,15 +54,20 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 		int h = this.getHeight();
 		int minX = w;
 		int minY = h;
-		maxWidth = 0;
-		maxHeight = 0;
+		if (drawForCopying) {
+			w = maxWidth;
+			h = maxHeight;
+		} else {
+			maxWidth = 0;
+			maxHeight = 0;
+		}
 
 		foundX = -1;
 		foundY = -1;
 
 		int level = parent.cbLevel.getSelectedIndex();
 
-		img = createImage(w,h);
+		Image img = createImage(w,h);
 		Graphics2D grp = (Graphics2D)(img.getGraphics());
 
 		if (parent.miAntialiasing.getState()) {
@@ -81,15 +87,15 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 		if (parent.miGrid.getState()) {
 			int gridX = scrollX % 64;
 			grp.setColor(new Color(224, 224, 224));
-			while (gridX < this.getWidth()) {
-				grp.drawLine(gridX, 0, gridX, this.getHeight());
+			while (gridX < w) {
+				grp.drawLine(gridX, 0, gridX, h);
 				gridX += 64;
 			}
 
 			int gridY = scrollY % 64;
 			grp.setColor(new Color(224, 224, 224));
-			while (gridY < this.getHeight()) {
-				grp.drawLine(0, gridY, this.getWidth(), gridY);
+			while (gridY < h) {
+				grp.drawLine(0, gridY, w, gridY);
 				gridY += 64;
 			}
 		}
@@ -538,6 +544,11 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 			showSearchResultFlag = false;
 			repaint(); // あんまりよくない
 		}
+
+		if (drawForCopying) {
+			this.imgForCopying = img;
+		}
+		drawForCopying = false;
 	}
 
 	public void showImportFileDialog() {
@@ -766,11 +777,27 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 	}
 
 	public void copyPageAsImage() {
-		Toolkit kit = Toolkit.getDefaultToolkit();
-		Clipboard clip = kit.getSystemClipboard();
+		drawForCopying = true;
+		scrollX = 0;
+		scrollY = 0;
+		repaint();
 
-		ImageSelection imageSelection = new ImageSelection(img);
-		clip.setContents(imageSelection, imageSelection);
+		Thread copyThread = new Thread(() -> {
+			while (drawForCopying) {
+				try {
+					Thread.sleep(10);
+				} catch (InterruptedException e) {
+
+				}
+			}
+
+			Toolkit kit = Toolkit.getDefaultToolkit();
+			Clipboard clip = kit.getSystemClipboard();
+
+			ImageSelection imageSelection = new ImageSelection(imgForCopying);
+			clip.setContents(imageSelection, imageSelection);
+		});
+		copyThread.start();
 	}
 
 	public class ImageSelection implements Transferable, ClipboardOwner {
