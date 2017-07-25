@@ -632,6 +632,18 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 					scrollX = originalX;
 				}
 			}
+			if (arg0.isMetaDown() || arg0.isControlDown()) {
+				if (scrollX > 0) {
+					scrollX = 0;
+				} else if (scrollX < -(maxWidth - this.getWidth())) {
+					scrollX = -(int)(maxWidth - this.getWidth());
+				}
+				if (scrollY > 0) {
+					scrollY = 0;
+				} else if (scrollY < -(maxHeight - this.getHeight())) {
+					scrollY = -(int)(maxHeight - this.getHeight());
+				}
+			}
 			repaint();
 		}
 	}
@@ -659,6 +671,8 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 			case KeyEvent.VK_UP:
 			if (arg0.isAltDown()) {
 				scrollY += 32;
+			} else if (arg0.isMetaDown() || arg0.isControlDown()) {
+				scrollY = 0;
 			} else {
 				scrollY += 8;
 			}
@@ -667,6 +681,8 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 			case KeyEvent.VK_DOWN:
 			if (arg0.isAltDown()) {
 				scrollY -= 32;
+			} else if (arg0.isMetaDown() || arg0.isControlDown()) {
+				scrollY = -(int)(maxHeight - this.getHeight());
 			} else {
 				scrollY -= 8;
 			}
@@ -675,6 +691,8 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 			case KeyEvent.VK_LEFT:
 			if (arg0.isAltDown()) {
 				scrollX += 32;
+			} else if (arg0.isMetaDown() || arg0.isControlDown()) {
+				scrollX = 0;
 			} else {
 				scrollX += 8;
 			}
@@ -683,6 +701,8 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 			case KeyEvent.VK_RIGHT:
 			if (arg0.isAltDown()) {
 				scrollX -= 32;
+			} else if (arg0.isMetaDown() || arg0.isControlDown()) {
+				scrollX = -(int)(maxWidth - this.getWidth());
 			} else {
 				scrollX -= 8;
 			}
