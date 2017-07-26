@@ -130,7 +130,7 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 						foundY = (int)(position.y / yRate - 2 + scrollY);
 					}
 				} else {
-					grp.setColor(Color.black);
+					grp.setColor(new Color(128, 0, 128));
 				}
 				grp.drawString(entity.physicalName, 
 					(int)(position.x / xRate + tableLogicalNameWidth + 8 + scrollX),
@@ -253,10 +253,11 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 						}
 						grp.setColor(Color.red);
 					} else {
-						grp.setColor(Color.black);
+						grp.setColor(new Color(128, 0, 128));
 					}
 					grp.drawString(field.physicalName, x + entity.logicalNameWidth + 4, y);
 				}
+				grp.setColor(new Color(128, 64, 0));
 				if (level == 2) {
 					grp.drawString(field.type, x + entity.logicalNameWidth + 4, y);
 				}
@@ -296,10 +297,11 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 							}
 							grp.setColor(Color.red);
 						} else {
-							grp.setColor(Color.black);
+							grp.setColor(new Color(128, 0, 128));
 						}
 						grp.drawString(field.physicalName, x + entity.logicalNameWidth + 4, y);
 					}
+					grp.setColor(new Color(128, 64, 0));
 					if (level == 2) {
 						grp.drawString(field.type, x + entity.logicalNameWidth + 4, y);
 					}
@@ -573,10 +575,6 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 
 	@Override
 	public void mouseClicked(MouseEvent arg0) {
-		if (arg0.getButton() == MouseEvent.BUTTON3) {
-			this.parent.mPopupMenu.show(arg0.getComponent(), arg0.getX(), arg0.getY());
-			return;
-		}
 		if (System.currentTimeMillis() - lastClickedTime < 1000) {
 			if (scrollX > 0) {
 				scrollX = 0;
@@ -605,6 +603,10 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 
 	@Override
 	public void mousePressed(MouseEvent arg0) {
+		if (arg0.getButton() == MouseEvent.BUTTON3) {
+			this.parent.mPopupMenu.show(arg0.getComponent(), arg0.getX(), arg0.getY());
+			return;
+		}
 		originalX = scrollX;
 		originalY = scrollY;
 		clickedX = arg0.getX();
