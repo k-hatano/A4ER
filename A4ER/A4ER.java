@@ -84,11 +84,11 @@ public class A4ER extends JFrame implements ActionListener {
 		pHeaderPanel.setLayout(new BorderLayout());
 
 		cbPage = new JComboBox();
-		cbPage.addActionListener(e -> a4erCanvas.repaint());
+		cbPage.addActionListener((ActionListener)(e -> a4erCanvas.repaint()));
 		pHeaderPanel.add("Center", cbPage);
 
 		cbLevel = new JComboBox();
-		cbLevel.addActionListener(e -> a4erCanvas.repaint());
+		cbLevel.addActionListener((ActionListener)(e -> a4erCanvas.repaint()));
 		pHeaderPanel.add("East", cbLevel);
 		cbLevel.addItem("Keys");
 		cbLevel.addItem("Attributes");
