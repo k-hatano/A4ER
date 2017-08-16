@@ -828,6 +828,9 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 			scrollX = originalScrollX;
 			scrollY = originalScrollY;
 			repaint();
+
+			JOptionPane.showMessageDialog(parent,"Copied to clipboard.", 
+				"Entities List", JOptionPane.INFORMATION_MESSAGE);
 		});
 		copyThread.start();
 	}
