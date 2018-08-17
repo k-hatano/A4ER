@@ -14,7 +14,7 @@ public class A4ER extends JFrame implements ActionListener {
 	JMenu mFile,mEdit,mERDiagram;
 	JMenuItem miOpen,miQuit;
 	JMenuItem miEntitiesList,miSearchString,miCancelSearching,miCopyPage;
-	JCheckBoxMenuItem miAntialiasing,miGrid;
+	JCheckBoxMenuItem miAntialiasing,miGrid,miUseDraftMode;
 	JComboBox cbPage, cbLevel;
 	A4ERCanvas a4erCanvas;
 	
@@ -64,6 +64,9 @@ public class A4ER extends JFrame implements ActionListener {
 		miGrid = new JCheckBoxMenuItem("Grid");
 		miGrid.addActionListener(this);
 		mERDiagram.add(miGrid);
+		miUseDraftMode = new JCheckBoxMenuItem("Use Draft Mode on Dragging");
+		miUseDraftMode.addActionListener(this);
+		mERDiagram.add(miUseDraftMode);
 		mbMenuBar.add(mERDiagram);
 
 		setJMenuBar(mbMenuBar);
@@ -84,11 +87,11 @@ public class A4ER extends JFrame implements ActionListener {
 		pHeaderPanel.setLayout(new BorderLayout());
 
 		cbPage = new JComboBox();
-		cbPage.addActionListener((ActionListener)(e -> a4erCanvas.repaint()));
+		cbPage.addItemListener((ItemListener)(e -> {a4erCanvas.repaint();}));
 		pHeaderPanel.add("Center", cbPage);
 
 		cbLevel = new JComboBox();
-		cbLevel.addActionListener((ActionListener)(e -> a4erCanvas.repaint()));
+		cbLevel.addItemListener((ItemListener)(e -> {a4erCanvas.repaint();}));
 		pHeaderPanel.add("East", cbLevel);
 		cbLevel.addItem("Keys");
 		cbLevel.addItem("Attributes");
@@ -119,7 +122,7 @@ public class A4ER extends JFrame implements ActionListener {
 			a4erCanvas.searchStringAndShowItInRed();
 		} else if (arg0.getSource() == miCancelSearching) {
 			a4erCanvas.cancelSearching();
-		} else if (arg0.getSource() == miAntialiasing || arg0.getSource() == miGrid) {
+		} else if (arg0.getSource() == miAntialiasing || arg0.getSource() == miGrid || arg0.getSource() == miUseDraftMode) {
 			a4erCanvas.repaint();
 		} else if (arg0.getSource() == miCopyPage || arg0.getSource() == miPopupCopyPage) {
 			a4erCanvas.copyPageAsImage();

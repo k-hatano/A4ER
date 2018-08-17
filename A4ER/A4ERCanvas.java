@@ -50,6 +50,9 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 	}
 
 	public void paint(final Graphics g){
+		int oldMaxWidth = maxWidth;
+		int oldMaxHeight = maxHeight;
+
 		int w = this.getWidth();
 		int h = this.getHeight();
 		int minX = w;
@@ -81,8 +84,11 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 		}
 		FontMetrics metrics = grp.getFontMetrics();
 
-		grp.setColor(Color.white);
+		grp.setColor(new Color(240, 240, 240));
 		grp.fillRect(0, 0, w, h);
+
+		grp.setColor(new Color(255, 255, 255));
+		grp.fillRect(scrollX, scrollY, oldMaxWidth, oldMaxHeight); // 雑！
 
 		if (parent.miGrid.getState()) {
 			int gridX = scrollX % 64;
@@ -244,8 +250,10 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 				} else {
 					grp.setColor(Color.black);
 				}
-				grp.drawString(field.logicalName, x, y);
-				if (level == 3 || level == 4) {
+				if (((!dragging || !parent.miUseDraftMode.getState()) || !parent.miUseDraftMode.getState())) {
+					grp.drawString(field.logicalName, x, y);
+				}
+				if ((level == 3 || level == 4) && ((!dragging || !parent.miUseDraftMode.getState()) || !parent.miUseDraftMode.getState())) {
 					if (searchingString != null && field.physicalName.indexOf(searchingString) >= 0) {
 						if (foundX == -1 && foundY == -1) {
 							foundX = (int)(position.x / xRate + scrollX);
@@ -258,15 +266,15 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 					grp.drawString(field.physicalName, x + entity.logicalNameWidth + 4, y);
 				}
 				grp.setColor(new Color(128, 64, 0));
-				if (level == 2) {
+				if (level == 2 && ((!dragging || !parent.miUseDraftMode.getState()) || !parent.miUseDraftMode.getState())) {
 					grp.drawString(field.type, x + entity.logicalNameWidth + 4, y);
 				}
-				if (level == 4) {
+				if (level == 4 && ((!dragging || !parent.miUseDraftMode.getState()) || !parent.miUseDraftMode.getState())) {
 					grp.drawString(field.type, x + entity.logicalNameWidth + entity.physicalNameWidth + 4, y);
 				}
 
 				grp.setColor(Color.black);
-				if (field.notNull != null && field.notNull.length() > 0) {
+				if ((field.notNull != null && field.notNull.length() > 0) && (!dragging || !parent.miUseDraftMode.getState())) {
 					grp.drawRect(x - 4, y - 7, 2, 4);
 				}
 			}
@@ -288,8 +296,10 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 					} else {
 						grp.setColor(Color.black);
 					}
-					grp.drawString(field.logicalName, x, y);
-					if (level == 3 || level == 4) {
+					if ((!dragging || !parent.miUseDraftMode.getState())) {
+						grp.drawString(field.logicalName, x, y);
+					}
+					if ((level == 3 || level == 4) && (!dragging || !parent.miUseDraftMode.getState())) {
 						if (searchingString != null && field.physicalName.indexOf(searchingString) >= 0) {
 							if (foundX == -1 && foundY == -1) {
 								foundX = (int)(position.x / xRate + scrollX);
@@ -302,15 +312,15 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 						grp.drawString(field.physicalName, x + entity.logicalNameWidth + 4, y);
 					}
 					grp.setColor(new Color(128, 64, 0));
-					if (level == 2) {
+					if (level == 2 && (!dragging || !parent.miUseDraftMode.getState())) {
 						grp.drawString(field.type, x + entity.logicalNameWidth + 4, y);
 					}
-					if (level == 4) {
+					if (level == 4 && (!dragging || !parent.miUseDraftMode.getState())) {
 						grp.drawString(field.type, x + entity.logicalNameWidth + entity.physicalNameWidth + 4, y);
 					}
 
 					grp.setColor(Color.black);
-					if (field.notNull != null && field.notNull.length() > 0) {
+					if ((field.notNull != null && field.notNull.length() > 0) && (!dragging || !parent.miUseDraftMode.getState())) {
 						grp.drawRect(x - 4, y - 7, 2, 4);
 					}
 				}
@@ -444,21 +454,23 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 				relationType1 = "N";
 			}
 
-			if (situation == Point.SITUATION_LEFT_TO_RIGHT) {
-				grp.drawString(relationType1, left1.x - 4 - metrics.getStringBounds(relationType1, grp).getBounds().width, 
-					left1.y - 4);
-			} else if (situation == Point.SITUATION_TOP_TO_BOTTOM) {
-				grp.drawString(relationType1, top1.x + 4, 
-					top1.y - 16);
-			} else if (situation == Point.SITUATION_RIGHT_TO_LEFT) {
-				grp.drawString(relationType1, right1.x + 4, 
-					right1.y - 4);
-			} else if (situation == Point.SITUATION_BOTTOM_TO_TOP) {
-				grp.drawString(relationType1, bottom1.x + 4, 
-					bottom1.y + 16);
-			} else {
-				grp.drawString(relationType1, right1.x + 4, 
-					(top1.y * bar1 + bottom1.y * rab1) / 1000 - 4);
+			if ((!dragging || !parent.miUseDraftMode.getState())) {
+				if (situation == Point.SITUATION_LEFT_TO_RIGHT) {
+					grp.drawString(relationType1, left1.x - 4 - metrics.getStringBounds(relationType1, grp).getBounds().width, 
+						left1.y - 4);
+				} else if (situation == Point.SITUATION_TOP_TO_BOTTOM) {
+					grp.drawString(relationType1, top1.x + 4, 
+						top1.y - 16);
+				} else if (situation == Point.SITUATION_RIGHT_TO_LEFT) {
+					grp.drawString(relationType1, right1.x + 4, 
+						right1.y - 4);
+				} else if (situation == Point.SITUATION_BOTTOM_TO_TOP) {
+					grp.drawString(relationType1, bottom1.x + 4, 
+						bottom1.y + 16);
+				} else {
+					grp.drawString(relationType1, right1.x + 4, 
+						(top1.y * bar1 + bottom1.y * rab1) / 1000 - 4);
+				}
 			}
 
 			String relationType2 = "";
@@ -474,21 +486,23 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 				relationType2 = "N";
 			}
 
-			if (situation == Point.SITUATION_LEFT_TO_RIGHT) {
-				grp.drawString(relationType2, right2.x + 4, 
-					right2.y - 4);
-			} else if (situation == Point.SITUATION_TOP_TO_BOTTOM) {
-				grp.drawString(relationType2, bottom2.x + 4, 
-					bottom2.y + 16);
-			} else if (situation == Point.SITUATION_RIGHT_TO_LEFT) {
-				grp.drawString(relationType2, left2.x - 4 - metrics.getStringBounds(relationType2, grp).getBounds().width, 
-					left2.y - 4);
-			} else if (situation == Point.SITUATION_BOTTOM_TO_TOP) {
-				grp.drawString(relationType2, top2.x + 4, 
-					top2.y - 16);
-			} else {
-				grp.drawString(relationType2, right2.x + 4, 
-					(top2.y * bar3 + bottom2.y * rab3) / 1000 - 4);
+			if ((!dragging || !parent.miUseDraftMode.getState())) {
+				if (situation == Point.SITUATION_LEFT_TO_RIGHT) {
+					grp.drawString(relationType2, right2.x + 4, 
+						right2.y - 4);
+				} else if (situation == Point.SITUATION_TOP_TO_BOTTOM) {
+					grp.drawString(relationType2, bottom2.x + 4, 
+						bottom2.y + 16);
+				} else if (situation == Point.SITUATION_RIGHT_TO_LEFT) {
+					grp.drawString(relationType2, left2.x - 4 - metrics.getStringBounds(relationType2, grp).getBounds().width, 
+						left2.y - 4);
+				} else if (situation == Point.SITUATION_BOTTOM_TO_TOP) {
+					grp.drawString(relationType2, top2.x + 4, 
+						top2.y - 16);
+				} else {
+					grp.drawString(relationType2, right2.x + 4, 
+						(top2.y * bar3 + bottom2.y * rab3) / 1000 - 4);
+				}
 			}
 		}
 
@@ -545,6 +559,10 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 			scrollY = - foundY + scrollY + 64;
 			showSearchResultFlag = false;
 			repaint(); // あんまりよくない
+		}
+
+		if (maxWidth != oldMaxWidth || maxHeight != oldMaxHeight) {
+			repaint(); // あんまりよくない！
 		}
 
 		if (drawForCopying) {
