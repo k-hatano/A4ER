@@ -16,6 +16,7 @@ public class A4ER extends JFrame implements ActionListener {
 	JMenuItem miEntitiesList,miSearchString,miCancelSearching,miCopyPage;
 	JCheckBoxMenuItem miAntialiasing,miGrid,miUseDraftMode;
 	JComboBox cbPage, cbLevel;
+	JScrollBar sbVerticalBar, sbHorizontalBar;
 	A4ERCanvas a4erCanvas;
 	
 	A4ER() {
@@ -82,6 +83,20 @@ public class A4ER extends JFrame implements ActionListener {
 
 		a4erCanvas = new A4ERCanvas(this);
 		add("Center", a4erCanvas);
+
+		sbVerticalBar = new JScrollBar(Adjustable.VERTICAL, 0, 1, 0, 1);
+		sbVerticalBar.addAdjustmentListener((AdjustmentListener)(l -> {
+			a4erCanvas.scrollY = -l.getValue();
+			a4erCanvas.repaint();
+		}));
+		add("East", sbVerticalBar);
+
+		sbHorizontalBar = new JScrollBar(Adjustable.HORIZONTAL, 0, 1, 0, 1);
+		sbHorizontalBar.addAdjustmentListener((AdjustmentListener)(l -> {
+			a4erCanvas.scrollX = -l.getValue();
+			a4erCanvas.repaint();
+		}));
+		add("South", sbHorizontalBar);
 
 		pHeaderPanel = new JPanel();
 		pHeaderPanel.setLayout(new BorderLayout());

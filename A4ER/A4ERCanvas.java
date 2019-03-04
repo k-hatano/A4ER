@@ -565,6 +565,9 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 			repaint(); // あんまりよくない！
 		}
 
+		parent.sbVerticalBar.setValues(-scrollY, h, 0, maxHeight);
+		parent.sbHorizontalBar.setValues(-scrollX, w, 0, maxWidth);
+
 		if (drawForCopying) {
 			this.imgForCopying = img;
 		}
