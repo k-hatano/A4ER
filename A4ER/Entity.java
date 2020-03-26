@@ -3,6 +3,7 @@ import java.util.*;
 public class Entity {
 	public String physicalName;
 	public String logicalName;
+	public String tag;
 	public ArrayList<Position> positions;
 
 	public int physicalNameWidth;
@@ -20,6 +21,7 @@ public class Entity {
 		positions = new ArrayList<Position>();
 		physicalName = "";
 		logicalName = "";
+		tag = "";
 		keys = 0;
 	}
 

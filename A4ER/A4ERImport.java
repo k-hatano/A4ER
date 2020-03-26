@@ -27,7 +27,6 @@ public class A4ERImport {
 				line = reader.readLine();
 			}
 
-
 			Entity entity = new Entity();
 			ArrayList<Field> fields = new ArrayList<Field>();
 			Field field = new Field();
@@ -80,6 +79,13 @@ public class A4ERImport {
 				matcher = p4.matcher(str);
 				if (matcher.find()) {
 					entity.logicalName = matcher.group(1);
+					continue;
+				}
+
+				final Pattern p23 = Pattern.compile("^Tag=(.+)");
+				matcher = p23.matcher(str);
+				if (matcher.find()) {
+					entity.tag = matcher.group(1);
 					continue;
 				}
 
@@ -247,14 +253,16 @@ public class A4ERImport {
 					comment = new Comment();
 					continue;
 				}
-				
 			}
+
+			canvas.parent.elfEntitiesListFrame.receiveEntities(canvas.lEREntities);
 
 			canvas.parent.cbPage.removeAllItems();
 			for (String page : canvas.lPages) {
 				canvas.parent.cbPage.addItem(page);
 			}
 			canvas.parent.cbLevel.setSelectedIndex(level);
+
 			return true;
 		} catch (IOException e) {
 			e.printStackTrace();

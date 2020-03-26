@@ -18,11 +18,12 @@ public class A4ER extends JFrame implements ActionListener {
 	JComboBox cbPage, cbLevel;
 	JScrollBar sbVerticalBar, sbHorizontalBar;
 	A4ERCanvas a4erCanvas;
+	EntitiesListFrame elfEntitiesListFrame;
 	
 	A4ER() {
 		super();
 
-		setSize(720,732);
+		setSize(800,812);
 		setLayout(new BorderLayout());
 		setTitle("A4ER");
 
@@ -46,6 +47,7 @@ public class A4ER extends JFrame implements ActionListener {
 		miCopyPage.addActionListener(this);
 		mEdit.add(miCopyPage);
 		miEntitiesList = new JMenuItem("Entities List...");
+		miEntitiesList.setAccelerator(KeyStroke.getKeyStroke('L',KeyEvent.CTRL_MASK));
 		miEntitiesList.addActionListener(this);
 		mEdit.add(miEntitiesList);
 		mEdit.addSeparator();
@@ -54,6 +56,7 @@ public class A4ER extends JFrame implements ActionListener {
 		miSearchString.addActionListener(this);
 		mEdit.add(miSearchString);
 		miCancelSearching = new JMenuItem("Cancel Searching");
+		miCancelSearching.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F3,KeyEvent.CTRL_MASK));
 		miCancelSearching.addActionListener(this);
 		mEdit.add(miCancelSearching);
 		mbMenuBar.add(mEdit);
@@ -62,10 +65,10 @@ public class A4ER extends JFrame implements ActionListener {
 		miAntialiasing = new JCheckBoxMenuItem("Antialiasing");
 		miAntialiasing.addActionListener(this);
 		mERDiagram.add(miAntialiasing);
-		miGrid = new JCheckBoxMenuItem("Grid");
+		miGrid = new JCheckBoxMenuItem("Grid", true);
 		miGrid.addActionListener(this);
 		mERDiagram.add(miGrid);
-		miUseDraftMode = new JCheckBoxMenuItem("Use Draft Mode on Dragging");
+		miUseDraftMode = new JCheckBoxMenuItem("Use Draft Mode on Dragging", true);
 		miUseDraftMode.addActionListener(this);
 		mERDiagram.add(miUseDraftMode);
 		mbMenuBar.add(mERDiagram);
@@ -78,6 +81,7 @@ public class A4ER extends JFrame implements ActionListener {
 		miPopupCopyPage.addActionListener(this);
 		mPopupMenu.add(miPopupCopyPage);
 		miPopupEntitiesList = new JMenuItem("Entities List...");
+		miPopupEntitiesList.setAccelerator(KeyStroke.getKeyStroke('L',KeyEvent.CTRL_MASK));
 		miPopupEntitiesList.addActionListener(this);
 		mPopupMenu.add(miPopupEntitiesList);
 
@@ -116,6 +120,8 @@ public class A4ER extends JFrame implements ActionListener {
 
 		add("North", pHeaderPanel);
 
+		elfEntitiesListFrame = new EntitiesListFrame(this);
+
 		addWindowListener(new WindowAdapter(){
 			public void windowClosing(WindowEvent e){
 				closeWindow();
@@ -132,7 +138,8 @@ public class A4ER extends JFrame implements ActionListener {
 		} else if (arg0.getSource() == miOpen) {
 			a4erCanvas.showImportFileDialog();
 		} else if (arg0.getSource() == miEntitiesList || arg0.getSource() == miPopupEntitiesList) {
-			a4erCanvas.showEntitiesList();
+			// a4erCanvas.showEntitiesList();
+			elfEntitiesListFrame.show();
 		} else if (arg0.getSource() == miSearchString) {
 			a4erCanvas.searchStringAndShowItInRed();
 		} else if (arg0.getSource() == miCancelSearching) {

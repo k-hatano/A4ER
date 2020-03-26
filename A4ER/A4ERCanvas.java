@@ -49,6 +49,10 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 		addKeyListener(this);
 	}
 
+	public void update(Graphics g){
+		paint(g);
+	}
+
 	public void paint(final Graphics g){
 		int oldMaxWidth = maxWidth;
 		int oldMaxHeight = maxHeight;
@@ -91,18 +95,40 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 		grp.fillRect(scrollX, scrollY, oldMaxWidth, oldMaxHeight); // 雑！
 
 		if (parent.miGrid.getState()) {
+			grp.setColor(new Color(232, 232, 232));
+
 			int gridX = scrollX % 64;
-			grp.setColor(new Color(224, 224, 224));
 			while (gridX < w) {
 				grp.drawLine(gridX, 0, gridX, h);
 				gridX += 64;
 			}
 
 			int gridY = scrollY % 64;
-			grp.setColor(new Color(224, 224, 224));
 			while (gridY < h) {
 				grp.drawLine(0, gridY, w, gridY);
 				gridY += 64;
+			}
+
+			grp.setColor(new Color(216, 216, 216));
+
+			gridX = scrollX % 64;
+			int gridXNum = -scrollX / 64;
+			while (gridX < w) {
+				if (gridXNum % 5 == 0) {
+					grp.drawLine(gridX, 0, gridX, h);
+				}
+				gridX += 64;
+				gridXNum++;
+			}
+
+			gridY = scrollY % 64;
+			int gridYNum = -scrollY / 64;
+			while (gridY < h) {
+				if (gridYNum % 5 == 0) {
+					grp.drawLine(0, gridY, w, gridY);
+				}
+				gridY += 64;
+				gridYNum++;
 			}
 		}
 
@@ -801,6 +827,18 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 		return 0;
 	}
 
+	public void showEntity(String entityPhysicalName) {
+		for (Entity entity : lEREntities) {
+			if (entity.physicalName.equals(entityPhysicalName)) {
+				Position position = entity.positions.get(0);
+				parent.cbPage.setSelectedItem(position.page);
+				scrollX = (int)(-position.x / xRate + 64);
+				scrollY = (int)(-position.y / yRate + 64);
+				repaint();
+				break;
+			}
+		}
+	}
 
 	public int searchStringAndShowItInRed() {
 		if (searchingString == null) {
