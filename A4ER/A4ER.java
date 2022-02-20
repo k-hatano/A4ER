@@ -7,7 +7,7 @@ import java.io.*;
 import javax.swing.*;
 
 public class A4ER extends JFrame implements ActionListener {
-	JPanel pHeaderPanel;
+	JPanel pHeaderPanel, pCanvasPanel;
 	JMenuBar mbMenuBar;
 	JPopupMenu mPopupMenu;
 	JMenuItem miPopupEntitiesList,miPopupCopyPage;
@@ -17,6 +17,7 @@ public class A4ER extends JFrame implements ActionListener {
 	JCheckBoxMenuItem miAntialiasing,miGrid,miUseDraftMode;
 	JComboBox cbPage, cbLevel;
 	JScrollBar sbVerticalBar, sbHorizontalBar;
+	JLabel lStatusLabel;
 	A4ERCanvas a4erCanvas;
 	EntitiesListFrame elfEntitiesListFrame;
 	
@@ -85,22 +86,27 @@ public class A4ER extends JFrame implements ActionListener {
 		miPopupEntitiesList.addActionListener(this);
 		mPopupMenu.add(miPopupEntitiesList);
 
+		pCanvasPanel = new JPanel();
+		pCanvasPanel.setLayout(new BorderLayout());
+
 		a4erCanvas = new A4ERCanvas(this);
-		add("Center", a4erCanvas);
+		pCanvasPanel.add("Center", a4erCanvas);
 
 		sbVerticalBar = new JScrollBar(Adjustable.VERTICAL, 0, 1, 0, 1);
 		sbVerticalBar.addAdjustmentListener((AdjustmentListener)(l -> {
 			a4erCanvas.scrollY = -l.getValue();
 			a4erCanvas.repaint();
 		}));
-		add("East", sbVerticalBar);
+		pCanvasPanel.add("East", sbVerticalBar);
 
 		sbHorizontalBar = new JScrollBar(Adjustable.HORIZONTAL, 0, 1, 0, 1);
 		sbHorizontalBar.addAdjustmentListener((AdjustmentListener)(l -> {
 			a4erCanvas.scrollX = -l.getValue();
 			a4erCanvas.repaint();
 		}));
-		add("South", sbHorizontalBar);
+		pCanvasPanel.add("South", sbHorizontalBar);
+
+		add("Center", pCanvasPanel);
 
 		pHeaderPanel = new JPanel();
 		pHeaderPanel.setLayout(new BorderLayout());
@@ -119,6 +125,9 @@ public class A4ER extends JFrame implements ActionListener {
 		cbLevel.addItem("Attributes (Physical & Logical Names) & Types");
 
 		add("North", pHeaderPanel);
+
+		lStatusLabel = new JLabel("");
+		add("South", lStatusLabel);
 
 		elfEntitiesListFrame = new EntitiesListFrame(this);
 

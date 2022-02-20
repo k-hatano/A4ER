@@ -772,6 +772,12 @@ public class A4ERCanvas extends Canvas implements MouseListener, MouseMotionList
 			scrollY = -(int)(maxHeight - this.getHeight());
 			repaint();
 			break;
+		case KeyEvent.VK_PAGE_UP:
+			parent.cbPage.setSelectedIndex( (parent.cbPage.getSelectedIndex() - 1 + parent.cbPage.getItemCount()) % parent.cbPage.getItemCount());
+			break;
+		case KeyEvent.VK_PAGE_DOWN:
+			parent.cbPage.setSelectedIndex( (parent.cbPage.getSelectedIndex() + 1) % parent.cbPage.getItemCount());
+			break;
 			default:
 			break;
 		}
